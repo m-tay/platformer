@@ -4,7 +4,6 @@
 
 #include "freeglut.h"
 #include <SOIL.h> // include the SOIL header file (for loading images)
-#include <math.h>
 #include <iostream>
 #include <algorithm>
 #include <iostream>
@@ -17,10 +16,14 @@ using namespace std;
 bool debug = false;	// flag to include debug information
 int screenWidth = 900, screenHeight = 700;
 bool keys[256];
-int levelWidth	= 64;	// store level dimensions (in tiles)
-int levelHeight = 32;	
-int tileWidth	= 32;		// store tile dimension information
-int tileHeight	= 32;
+bool leftPressed = false;
+int mouseX;
+int mouseY;
+string gameStage = "title";
+int levelWidth = 64;	// store level dimensions (in tiles)
+int levelHeight = 32;
+int tileWidth = 32;		// store tile dimension information
+int tileHeight = 32;
 float playerAccelRate	= 0.35f;	// param for player acceleration
 float playerJumpRate	= 0.9f;	// param for player jump rate
 float playerDecelRate	= 0.2f;
@@ -43,6 +46,7 @@ string levelMap;		// stores level tilemap
 GLuint tileTextures[2];	// stores level tile textures
 GLuint bgTexture[1];	// stores background textures
 GLuint playerSprite[3];	// stores player sprite
+GLuint buttons[2];		// stores button textures
 
 // opengl function prototypes
 void display();				//called in winmain to draw everything to the screen
@@ -205,9 +209,6 @@ public:
 		glTexCoord2d(0.0, 0.0);
 		glVertex2f(posX, posY + tileHeight);
 		glEnd();
-
-
-
 
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -458,6 +459,14 @@ int loadTileTextures()
 	(
 		"textures/sprites/1/2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
+	buttons[0] = SOIL_load_OGL_texture
+	(
+		"textures/buttons/b-start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	buttons[1] = SOIL_load_OGL_texture
+	(
+		"textures/buttons/b-quit.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
 
 	// check for errors
 	if (tileTextures[0] == 0) {
@@ -483,6 +492,14 @@ int loadTileTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
 	glBindTexture(GL_TEXTURE_2D, playerSprite[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, buttons[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, buttons[1]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -515,29 +532,6 @@ void moveCamera() {
 		camY = (float) levelActualHeight - screenHeight;
 
 	glTranslatef(-camX, -camY, 0.0f);
-}
-
-// main display function
-void display()
-{
-	// process key operations
-	keyOperations();
-	keySpecialOperations();
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glLoadIdentity();
-	moveCamera();
-	drawLevel();
-	playerEntity.draw();
-	playerEntity.frame += 0.01f;	// update frame animation
-
-	platform1.draw();
-
-	glPopMatrix();
-
-	glFlush();
-	glutSwapBuffers();
 }
 
 // gets tile character at (x,y) coordinate
@@ -722,8 +716,121 @@ void keySpecialUp(int key, int x, int y) {
 	keySpecialStates[key] = false;
 }
 
+void mouse(int button, int state, int x, int y)
+{
+	switch (button) {
+	case GLUT_LEFT_BUTTON:
+		if (state == GLUT_DOWN)	{
+			leftPressed = true;
+			mouseX = x;
+			mouseY = y;
+		}
+		else {
+			leftPressed = false;
+			break;
+		}
+	case GLUT_RIGHT_BUTTON:
+		// do nothing
+		break;
+	default:
+		break;
+	}
+}
+
+
+
 void update() {
 	glutPostRedisplay();
+}
+
+void drawTitleScreen() {
+	// draw background
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, bgTexture[0]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(0, 0);
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(0, screenHeight);
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(screenWidth, screenHeight);
+
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(screenWidth, 0);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+	// draw start button
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, buttons[0]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+		glTexCoord2d(0.0, 1.0);			
+		glVertex2f(314.0f, 300.0f);	// bl
+
+		glTexCoord2d(0.0, 0.0);			
+		glVertex2f(314.0f, 520.0f);	// br
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(628.0f, 520.0f);	// tr
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(628.0f, 300.0f); // tl
+
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+}
+
+void processTitleScreenInput() {
+	if(leftPressed) {
+		if(mouseX >= 314 && mouseX <= 628 && mouseY >= 300 && mouseY <= 520) {
+			gameStage = "level1";
+		}
+	}
+}
+
+void doTitleScreen() {
+	// draw background
+	drawTitleScreen();
+	processTitleScreenInput();
+}
+
+void doGameLevel() {
+	moveCamera();
+	drawLevel();
+	playerEntity.draw();
+	playerEntity.frame += 0.01f;	// update frame animation
+	for (int i = 0; i < movingPlatforms.size(); i++) {
+		movingPlatforms.at(i)->draw();
+	}
+}
+
+// main display function
+void display()
+{
+	// process key operations
+	keyOperations();
+	keySpecialOperations();
+
+	// clear buffer, load identity, ready for next frame
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+
+	// game drawing logic
+	if(gameStage == "title")
+		doTitleScreen();
+	if(gameStage == "level1")
+		doGameLevel();
+
+	glPopMatrix();
+	glFlush();
+	glutSwapBuffers();
 }
 
 int main(int argc, char **argv) {
@@ -733,7 +840,7 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("OpenGL FreeGLUT Template");
+	glutCreateWindow("Matt's platform game");
 
 	init();
 	initLevel();	// run level initialisation
@@ -752,6 +859,7 @@ int main(int argc, char **argv) {
 	glutKeyboardUpFunc(keyUp);
 	glutSpecialFunc(keySpecialPressed);
 	glutSpecialUpFunc(keySpecialUp);
+	glutMouseFunc(mouse);
 
 	glutMainLoop();
 
