@@ -1,5 +1,4 @@
 #include "MovingPlatform.h"
-#include <iostream>
 
 MovingPlatform::MovingPlatform(Game& gameObj, float x, float y) {
 		posX = x;

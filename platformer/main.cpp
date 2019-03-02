@@ -10,7 +10,7 @@
 #include <iterator>
 #include <vector>
 #include "Game.h"
-#include "MovingPlatform.h"
+#include "Entities.h"
 
 using namespace std;
 
@@ -28,214 +28,13 @@ void update();				//called in winmain to update variables
 // game function prototypes
 void drawLevel();
 
-// make a vector collection of moving platforms, so they can be collision checked
-vector<MovingPlatform*> movingPlatforms;
 
 // object class for all moving objects (ie. things that can move + have collisions 
-class Entity {	
-	public:
-		float posX;	// position
-		float posY;
-		float velX = 0.0f;	// velocity
-		float velY = 0.0f;
-		float newPosX;
-		float newPosY;
-		char tileTL;	// holds the 4 tiles around the entity
-		char tileTR;
-		char tileBL;
-		char tileBR;
-		bool onGround; // holds whether entity is jumping or not
-		float frame = 0.0f; // tracks the frame for animating the sprite
-		char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
 
-		// constructor
-		Entity(float x, float y) {
-			posX = x;
-			posY = y;
-		}
-
-		// calculates the tiles around the entity
-		void findSurroundingTiles() {
-			// calculate x,y coords of surrounding tiles
-			// assumes entities are no bigger than 1 standard tile width
-			int tileLeft = (int) newPosX / game.tileWidth;
-			int tileRight = (int)(newPosX / game.tileWidth) + 1;
-			int tileTop = (int) (newPosY / game.tileHeight) + 1;
-			int tileBottom = (int) newPosY / game.tileHeight;
-
-			// get the actual tile values from tilemap
-			char tileTL = game.getTile(&game, tileLeft, tileTop);
-			char tileTR = game.getTile(&game, tileRight, tileTop);
-			char tileBL = game.getTile(&game, tileLeft, tileBottom);
-			char tileBR = game.getTile(&game, tileRight, tileBottom);
-		}
-
-		// check for collisions with tilemap on x axis
-		bool isCollidingX() {		
-			// calculate x,y coords of surrounding tiles
-			// assumes entities are no bigger than 1 standard tile width
-			int tileLeft = (int) newPosX / game.tileWidth;
-			int tileRight = (int) (newPosX / game.tileWidth) + 1;
-			int tileTop = (int) (posY / game.tileHeight) + 1;
-			int tileBottom = (int) posY / game.tileHeight;
-
-			// get the actual tile values from tilemap
-			char tileTL = game.getTile(&game, tileLeft, tileTop);
-			char tileTR = game.getTile(&game, tileRight, tileTop);
-			char tileBL = game.getTile(&game, tileLeft, tileBottom);
-			char tileBR = game.getTile(&game, tileRight, tileBottom);
-
-			// if any collisions detected, return true
-			if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
-				tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D')
-				return true;
-
-			// if not colliding, return false
-			return false;
-	}
-
-		// check for collisions with tilemap on y axis
-		bool isCollidingY() {
-			// calculate x,y coords of surrounding tiles
-			// assumes entities are no bigger than 1 standard tile width
-			int tileLeft = (int) posX / game.tileWidth;
-			int tileRight = (int) (posX / game.tileWidth) + 1;
-			int tileTop = (int) (newPosY / game.tileHeight) + 1;
-			int tileBottom = (int) newPosY / game.tileHeight;
-
-			// get the actual tile values from tilemap
-			char tileTL = game.getTile(&game, tileLeft, tileTop);
-			char tileTR = game.getTile(&game, tileRight, tileTop);
-			char tileBL = game.getTile(&game, tileLeft, tileBottom);
-			char tileBR = game.getTile(&game, tileRight, tileBottom);
-
-			// ceiling collision, set y velocity to 0
-			if (tileTL == '#' || tileTR == '#' || tileTL == 'D' || tileTR == 'D') {
-				velY = 0;
-				return true;
-			}
-
-			// ground collision, set jumping flag back to false
-			if (tileBL == '#' || tileBR == '#' || tileBL == 'D' || tileBR == 'D') {
-				onGround = true;
-				return true;
-			}
-
-			// if not colliding, return false
-			return false;
-		}
-
-		bool isCollidingWithMovingPlatform() {			
-			// loop through all moving platforms
-			for (int i = 0; i < movingPlatforms.size(); i++) {
-				// AABB edge overlap checks
-				if (newPosX + game.tileWidth >= movingPlatforms.at(i)->posX								&&
-					newPosX <= movingPlatforms.at(i)->posX + movingPlatforms.at(i)->platformWidth	&&
-					newPosY + game.tileHeight >= movingPlatforms.at(i)->posY							&&
-					newPosY <= movingPlatforms.at(i)->posY + game.tileHeight) {
-
-					// if AABB overlap, check if entity is hitting it from the bottom
-					if ((newPosX + game.tileHeight) >= movingPlatforms.at(i)->posX &&
-						(newPosX + game.tileHeight) < (movingPlatforms.at(i)->posX + game.tileHeight)) {
-						velY = 0;
-					}
-		
-					return true;
-				}
-			}
-
-			// if no edge overlaps detected
-			return false;
-		}
-
-		void trackMovingPlatforms() {
-
-			// loop through all moving platforms
-			for (int i = 0; i < movingPlatforms.size(); i++) {
-
-				// check if within x axis of moving platform
-				if (posX >= movingPlatforms.at(i)->posX && (posX + game.tileWidth) < (movingPlatforms.at(i)->posX + movingPlatforms.at(i)->platformWidth)) {
-
-					// check if close enough to surface of moving platform to track movement
-					if ((movingPlatforms.at(i)->posY - posY + 32) > -0.3f && (movingPlatforms.at(i)->posY - posY + 32) < 0.3f) {
-						posX += movingPlatforms.at(i)->velX;
-						velY = 0;
-						onGround = true;
-
-					}
-				}
-				// if out of bounds of moving platform and was on ground
-				else {
-					if (onGround) {
-						velY -= game.gravityRate;
-					}
-				}
-			}
-		}
-
-		
-		// update entity position based on velocity
-		void updatePosition() {
-			// update entity's model of the tiles surrounding it
-			findSurroundingTiles();
-
-			// calculate proposed new position
-			newPosX = posX + velX;
-			newPosY = posY + velY;
-
-			// check for collision with tilemap in x axis
-			if (!isCollidingX() && !isCollidingWithMovingPlatform())
-				posX = newPosX;
-
-			// check for collision in with tilemap y axis
-			if (!isCollidingY() && !isCollidingWithMovingPlatform())
-				posY = newPosY;
-
-			// deceleration on x axis
-			velX = 0;
-
-			trackMovingPlatforms();
-
-			// apply gravity 
-			if(!onGround)
-				velY -= game.gravityRate;
-
-
-		}
-
-		// draws the entity
-		void draw() {
-
-			updatePosition();
-
-			if (frame > 2) // cycle frame animation back to start
-				frame = 0;
-			
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, game.playerSprite[(int)frame]);
-
-			glBegin(GL_QUADS);
-
-				glTexCoord2d(0.0, 1.0);
-				glVertex2f(posX, posY);
-
-				glTexCoord2d(1.0, 1.0);
-				glVertex2f(posX + game.tileWidth, posY);
-				
-				glTexCoord2d(1.0, 0.0);
-				glVertex2f(posX + game.tileWidth, posY + game.tileHeight);
-				
-				glTexCoord2d(0.0, 0.0);
-				glVertex2f(posX, posY + game.tileHeight);
-			glEnd();
-
-			glDisable(GL_TEXTURE_2D);
-		}
-};
 
 
 // create player entity object
-Entity playerEntity(32.0f, 32.0f);
+Entity playerEntity(game, 32.0f, 32.0f);
 
 
 
@@ -477,7 +276,7 @@ void init() {
 
 
 	// add entities to vector
-	movingPlatforms.push_back(&platform1);
+	game.movingPlatforms.push_back(&platform1);
 }
 
 // processes key presses
@@ -612,8 +411,8 @@ void doGameLevel() {
 	drawLevel();
 	playerEntity.draw();
 	playerEntity.frame += 0.01f;	// update frame animation
-	for (int i = 0; i < movingPlatforms.size(); i++) {
-		movingPlatforms.at(i)->draw();
+	for (int i = 0; i < game.movingPlatforms.size(); i++) {
+		game.movingPlatforms.at(i)->draw();
 	}
 }
 

@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include <string>
 #include "freeglut.h"
+#include <vector>
+
+
+using namespace std;
+
+class MovingPlatform;	// forward declare the MovingPlatform class
 
 class Game
 {
@@ -34,11 +40,15 @@ class Game
 		float camY = 0.0f;
 		
 		// game variables
-		std::string levelMap;		// stores level tilemap
+		string levelMap;	// stores level tilemap
 		GLuint tileTextures[2];	// stores level tile textures
 		GLuint bgTexture[1];	// stores background textures
 		GLuint playerSprite[3];	// stores player sprite
 		GLuint buttons[2];		// stores button textures
+		vector<MovingPlatform*> movingPlatforms;
 
+
+		// utility methods for running the game
+		// getTile returns the the tile at a given x,y coordinate
 		static char getTile(Game *game, int x, int y);
 };

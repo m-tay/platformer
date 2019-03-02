@@ -4,9 +4,7 @@
 class MovingPlatform
 {
 	public:
-		// constructor
-		MovingPlatform(Game& gameObj, float x, float y);
-
+		
 		Game *game;
 		float posX;	// position
 		float posY;
@@ -21,6 +19,9 @@ class MovingPlatform
 		int tilesWide = 3;
 		int platformWidth;
 		bool movingPosX = true;
+
+		// constructor
+		MovingPlatform(Game& gameObj, float x, float y);
 		
 		// calculates the tiles around the entity
 		void findSurroundingTiles();
