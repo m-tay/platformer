@@ -1,7 +1,7 @@
 #pragma once
 #include "Game.h"
 
-
+// class for the moving platforms
 class MovingPlatform
 {
 public:
@@ -40,7 +40,7 @@ public:
 	void draw();
 };
 
-
+// class for character entities
 class Entity {
 public:
 
@@ -58,14 +58,14 @@ public:
 	char tileTR;
 	char tileBL;
 	char tileBR;
-	bool onGround; // holds whether entity is jumping or not
-	float frame = 0.0f; // tracks the frame for animating the sprite
+	bool onGround;	// holds whether entity is on ground
+	bool jumping;	// holds whether entity is in process of jumping
+	int jumpTime;	// holds how long entity has been in air
+	float playerSpriteFrame = 0.0f; // tracks the playerSpriteFrame for animating the sprite
 	char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
-
-
-
+	
 	// calculates the tiles around the entity
-	void findSurroundingTiles();
+	void checkUpdateCollectables();
 
 	// check for collisions with tilemap on x axis
 	bool isCollidingX();
@@ -84,3 +84,4 @@ public:
 	// draws the entity
 	void draw();
 };
+

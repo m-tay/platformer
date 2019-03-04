@@ -1,4 +1,5 @@
 #include "Entities.h"
+#include <iostream>
 
 MovingPlatform::MovingPlatform(Game& gameObj, float x, float y) {
 	posX = x;
@@ -98,8 +99,8 @@ void MovingPlatform::updatePosition() {
 	findSurroundingTiles();
 
 	// calculate proposed new position
-	newPosX = posX + velX;
-	newPosY = posY + velY;
+	newPosX = posX + (velX * game->deltaTime);
+	newPosY = posY + (velY * game->deltaTime);
 
 	// check for collision in x axis
 	if (!isCollidingX())
@@ -148,7 +149,7 @@ void MovingPlatform::draw() {
 	}
 
 	// calculates the tiles around the entity
-	void Entity::findSurroundingTiles() {
+	void Entity::checkUpdateCollectables() {
 		// calculate x,y coords of surrounding tiles
 		// assumes entities are no bigger than 1 standard tile width
 		int tileLeft = (int)newPosX / game->tileWidth;
@@ -161,6 +162,27 @@ void MovingPlatform::draw() {
 		char tileTR = game->getTile(game, tileRight, tileTop);
 		char tileBL = game->getTile(game, tileLeft, tileBottom);
 		char tileBR = game->getTile(game, tileRight, tileBottom);
+
+		// update player score, remove collectable
+		if(tileTL == '1') {
+			game->playerScore++;	// update score
+			game->emptyTile(game, tileLeft, tileTop);
+		}
+
+		if (tileTR == '1') {
+			game->playerScore++;	// update score
+			game->emptyTile(game, tileRight, tileTop);
+		}
+
+		if (tileBL == '1') {
+			game->playerScore++;	// update score
+			game->emptyTile(game, tileLeft, tileBottom);
+		}
+
+		if (tileBR == '1') {
+			game->playerScore++;	// update score
+			game->emptyTile(game, tileRight, tileBottom);
+		}
 	}
 
 	// check for collisions with tilemap on x axis
@@ -270,12 +292,12 @@ void MovingPlatform::draw() {
 
 	// update entity position based on velocity
 	void Entity::updatePosition() {
-		// update entity's model of the tiles surrounding it
-		findSurroundingTiles();
+		// update for collisions with collectibles, update them
+		checkUpdateCollectables();
 
 		// calculate proposed new position
-		newPosX = posX + velX;
-		newPosY = posY + velY;
+		newPosX = posX + (velX * game->deltaTime);
+		newPosY = posY + (velY * game->deltaTime);  
 
 		// check for collision with tilemap in x axis
 		if (!isCollidingX() && !isCollidingWithMovingPlatform())
@@ -302,11 +324,11 @@ void MovingPlatform::draw() {
 
 		updatePosition();
 
-		if (frame > 2) // cycle frame animation back to start
-			frame = 0;
+		if (playerSpriteFrame > 2) // cycle playerSpriteFrame animation back to start
+			playerSpriteFrame = 0;
 
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, game->playerSprite[(int)frame]);
+		glBindTexture(GL_TEXTURE_2D, game->playerSprite[(int)playerSpriteFrame]);
 
 		glBegin(GL_QUADS);
 
@@ -322,7 +344,7 @@ void MovingPlatform::draw() {
 		glTexCoord2d(0.0, 0.0);
 		glVertex2f(posX, posY + game->tileHeight);
 		glEnd();
-
+		
 		glDisable(GL_TEXTURE_2D);
 	}
 
