@@ -139,7 +139,19 @@ int loadTextures()
 
 	game.enemy1Texture.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/3/dino1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/sprites/3/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy1Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/3/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy1Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/3/tile002.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy1Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/3/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 
 	// check for errors
@@ -245,6 +257,13 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	// error checking
 	GLenum errorCode = glGetError();
@@ -560,7 +579,7 @@ void doGameLevel() {
 	playerEntity.draw();
 	playerEntity.playerSpriteFrame += 0.01f;	// update playerSpriteFrame animation
 	game.coinSpriteFrame += 0.01f;				// update coin sprite frame
-
+	
 	// draw all moving platforms
 	for (int i = 0; i < game.movingPlatforms.size(); i++) {
 		game.movingPlatforms.at(i)->draw();
@@ -568,7 +587,8 @@ void doGameLevel() {
 
 	// draw all enemy objects
 	for(int i = 0; i < game.enemies.size(); i++) {
-		game.enemies.at(i)->draw();
+		game.enemies.at(i)->spriteFrame += 0.01f;	// update animation frame
+		game.enemies.at(i)->draw();					// draw enemy
 	}
 }
 

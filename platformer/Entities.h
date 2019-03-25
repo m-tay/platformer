@@ -111,8 +111,9 @@ public:
 	bool onGround;	// holds whether entity is on ground
 	bool jumping;	// holds whether entity is in process of jumping
 	int jumpTime;	// holds how long entity has been in air
-	float playerSpriteFrame = 0.0f; // tracks the playerSpriteFrame for animating the sprite
+	float spriteFrame = 0.0f; // tracks the enemy1 sprite frame for animating the sprite
 	char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
+	bool movingPosX = true;
 
 					   // spriteSet holds all a vector of GLuint arrays to store all the textures
 					   // vector[0] - walking animation	

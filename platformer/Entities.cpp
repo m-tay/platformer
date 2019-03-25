@@ -370,8 +370,16 @@ bool Enemy::isCollidingX() {
 
 	// if any collisions detected, return true
 	if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
-		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D')
+		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D') {
+		
+		// invert direction of movement flag
+		if (movingPosX)
+			movingPosX = false;
+		else
+			movingPosX = true;
+
 		return true;
+	}
 
 	// if not colliding, return false
 	return false;
@@ -410,6 +418,11 @@ bool Enemy::isCollidingY() {
 
 // update entity position based on velocity
 void Enemy::updatePosition() {
+	// add velocity to enemy
+	if (movingPosX)
+		velX = 0.2f;
+	else
+		velX = -0.2f;
 
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
@@ -439,11 +452,11 @@ void Enemy::draw() {
 
 	updatePosition();
 
-	if (playerSpriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
-		playerSpriteFrame = 0;
+	if (spriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
+		spriteFrame = 0;
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)playerSpriteFrame]);
+	glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)spriteFrame]);
 
 	glBegin(GL_QUADS);
 
