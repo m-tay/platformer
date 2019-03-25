@@ -6,7 +6,9 @@
 
 using namespace std;
 
-class MovingPlatform;	// forward declare the MovingPlatform class
+class MovingPlatform;	// forward declares
+class Entity;
+class Enemy;
 
 class Game
 {
@@ -48,13 +50,22 @@ class Game
 		
 		// game variables
 		string levelMap;	// stores level tilemap
-		GLuint tileTextures[2];	// stores level tile textures
-		GLuint bgTexture[1];	// stores background textures
-		GLuint playerSprite[3];	// stores player sprite
-		GLuint coinSprite[16];  // stores spinning coin sprite
-		GLuint buttons[2];		// stores button textures
-		vector<MovingPlatform*> movingPlatforms;
 
+		// textures
+		vector<GLuint> tileTextures;			// stores level tile textures
+		vector<GLuint> bgTexture;			// stores background textures
+		vector<GLuint> playerSpriteRunning;			// stores player sprite
+		vector<GLuint> coinSprite;			// stores spinning coin sprite
+		vector<GLuint> enemy1Texture;
+		vector<GLuint> buttons;				// stores button textures
+
+		// vector of vectors to store textures
+		vector<vector<GLuint> > playerTextures;
+		vector<vector<GLuint> > enemy1Textures;
+
+		// vectors to store game objects
+		vector<MovingPlatform*> movingPlatforms;
+		vector<Enemy*> enemies;
 
 		// utility methods for running the game
 		// getTile returns the the tile at a given x,y coordinate

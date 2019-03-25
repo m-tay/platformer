@@ -33,7 +33,7 @@ void Game::drawScore(Game* game) {
 			glLoadIdentity();
 
 			glDisable(GL_LIGHTING);
-			glColor3f(1.0f, 0.0f, 0.0f);
+			glColor3f(0.1f, 0.1f, 0.1f);
 			
 			// text rendering code
 			glRasterPos2i(20, 20);

@@ -14,8 +14,16 @@
 
 using namespace std;
 
-// create game object to manage paramaters
+// create game object to manage parameters
 Game game;
+
+// create entities
+Entity playerEntity(game, 32.0f, 32.0f);		// player entity
+Enemy enemy1(game, 384.0f, 160.0f);
+
+// create moving platform object
+MovingPlatform platform1(game, 96.0f, 96.0f);	// moving platform
+
 
 // opengl function prototypes
 void display();				//called in winmain to draw everything to the screen
@@ -28,120 +36,114 @@ void update();				//called in winmain to update variables
 // game function prototypes
 void drawLevel();
 
-
-// object class for all moving objects (ie. things that can move + have collisions 
-
-
-
-// create player entity object
-Entity playerEntity(game, 32.0f, 32.0f);
-
-
-
 // texture loader
 int loadTextures()
 {
 	// loads image directly as texture
-	game.tileTextures[0] = SOIL_load_OGL_texture
+	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
-		"textures/tiles/GrassCliffMid.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/tiles/GrassCliffMid.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	// loads image directly as texture
-	game.tileTextures[1] = SOIL_load_OGL_texture
+	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
-		"textures/tiles/Dirt.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/tiles/Dirt.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.bgTexture[0] = SOIL_load_OGL_texture
+	game.bgTexture.push_back(SOIL_load_OGL_texture
 	(
-		"textures/bg/Background.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/bg/Background.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.playerSprite[0] = SOIL_load_OGL_texture
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/0.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/1/0.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.playerSprite[1] = SOIL_load_OGL_texture
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/1/1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.playerSprite[2] = SOIL_load_OGL_texture
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/1/2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.buttons[0] = SOIL_load_OGL_texture
+	game.buttons.push_back(SOIL_load_OGL_texture
 	(
-		"textures/buttons/b-start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/buttons/b-start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.buttons[1] = SOIL_load_OGL_texture
+	game.buttons.push_back(SOIL_load_OGL_texture
 	(
-		"textures/buttons/b-quit.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/buttons/b-quit.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[0] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[1] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[2] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[3] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 4.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 4.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[4] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 5.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 5.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[5] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 6.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 6.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[6] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 7.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 7.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[7] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 8.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 8.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[8] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 9.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 9.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[9] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 10.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 10.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[10] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 11.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 11.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[11] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 12.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 12.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[12] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 13.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 13.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[13] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 14.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 14.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[14] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 15.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 15.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	game.coinSprite[15] = SOIL_load_OGL_texture
+	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/2/image 16.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		"textures/sprites/2/image 16.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy1Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/3/dino1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 
 	// check for errors
-	if (game.tileTextures[0] == 0) {
+	if (game.tileTextures.at(0) == 0) {
 		cout << "Error loading textures" << endl;
 		exit(0);
 	}
@@ -155,15 +157,15 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBindTexture(GL_TEXTURE_2D, game.playerSprite[0]);
+	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		
-	glBindTexture(GL_TEXTURE_2D, game.playerSprite[1]);
+			
+	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[1]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
-	glBindTexture(GL_TEXTURE_2D, game.playerSprite[2]);
+	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[2]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -239,6 +241,11 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
 	// error checking
 	GLenum errorCode = glGetError();
 	if (errorCode != GL_NO_ERROR) {
@@ -248,6 +255,10 @@ int loadTextures()
 	// enable blending on the alpha channel
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// add loaded textures to entities
+	playerEntity.spriteSet.push_back(game.playerSpriteRunning);
+	enemy1.spriteSet.push_back(game.enemy1Texture);
 
 	return true;
 }
@@ -269,8 +280,6 @@ void moveCamera() {
 
 	glTranslatef(-game.camX, -game.camY, 0.0f);
 }
-
-
 
 void drawLevel() {
 
@@ -398,14 +407,12 @@ void reshape(int width, int height)	{
 	glLoadIdentity();
 }
 
-// create moving platform object
-MovingPlatform platform1(game, 96.0f, 96.0f);
-
 // initialise opengl window
 void init() {
 
 	// add entities to vector
 	game.movingPlatforms.push_back(&platform1);
+	game.enemies.push_back(&enemy1);
 }
 
 // processes key presses
@@ -429,7 +436,7 @@ void keyOperations() {
 			int jumpTime = glutGet(GLUT_ELAPSED_TIME) - playerEntity.jumpTime;
 
 			// if player has been jumping less than 100ms, allow more up-velocity to be added
-			if (jumpTime < 100) {
+			if (jumpTime < 150) {
 				playerEntity.velY = game.playerJumpRate;
 			}
 		}
@@ -553,8 +560,15 @@ void doGameLevel() {
 	playerEntity.draw();
 	playerEntity.playerSpriteFrame += 0.01f;	// update playerSpriteFrame animation
 	game.coinSpriteFrame += 0.01f;				// update coin sprite frame
+
+	// draw all moving platforms
 	for (int i = 0; i < game.movingPlatforms.size(); i++) {
 		game.movingPlatforms.at(i)->draw();
+	}
+
+	// draw all enemy objects
+	for(int i = 0; i < game.enemies.size(); i++) {
+		game.enemies.at(i)->draw();
 	}
 }
 

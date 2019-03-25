@@ -138,15 +138,12 @@ void MovingPlatform::draw() {
 	glDisable(GL_TEXTURE_2D);
 }
 
-
-
-
-	// constructor
-	Entity::Entity(Game& gameObj, float x, float y) {
-		posX = x;
-		posY = y;
-		game = &gameObj;
-	}
+// constructor
+Entity::Entity(Game& gameObj, float x, float y) {
+	posX = x;
+	posY = y;
+	game = &gameObj;
+}
 
 	// calculates the tiles around the entity
 	void Entity::checkUpdateCollectables() {
@@ -274,7 +271,7 @@ void MovingPlatform::draw() {
 
 				// check if close enough to surface of moving platform to track movement
 				if ((game->movingPlatforms.at(i)->posY - posY + 32) > -0.3f && (game->movingPlatforms.at(i)->posY - posY + 32) < 0.3f) {
-					posX += game->movingPlatforms.at(i)->velX;
+					posX += game->movingPlatforms.at(i)->velX * game->deltaTime;
 					velY = 0;
 					onGround = true;
 
@@ -282,7 +279,7 @@ void MovingPlatform::draw() {
 			}
 			// if out of bounds of moving platform and was on ground
 			else {
-				if (onGround) {
+				if (!onGround) {
 					velY -= game->gravityRate;
 				}
 			}
@@ -323,12 +320,12 @@ void MovingPlatform::draw() {
 	void Entity::draw() {
 
 		updatePosition();
-
-		if (playerSpriteFrame > 2) // cycle playerSpriteFrame animation back to start
+		
+		if (playerSpriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
 			playerSpriteFrame = 0;
 
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, game->playerSprite[(int)playerSpriteFrame]);
+		glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)playerSpriteFrame]);
 
 		glBegin(GL_QUADS);
 
@@ -347,4 +344,122 @@ void MovingPlatform::draw() {
 		
 		glDisable(GL_TEXTURE_2D);
 	}
+
+
+// constructor
+Enemy::Enemy(Game& gameObj, float x, float y) {
+	posX = x;
+	posY = y;
+	game = &gameObj;
+}
+
+// check for collisions with tilemap on x axis
+bool Enemy::isCollidingX() {
+	// calculate x,y coords of surrounding tiles
+	// assumes entities are no bigger than 1 standard tile width
+	int tileLeft = (int)newPosX / game->tileWidth;
+	int tileRight = (int)(newPosX / game->tileWidth) + 1;
+	int tileTop = (int)(posY / game->tileHeight) + 1;
+	int tileBottom = (int)posY / game->tileHeight;
+
+	// get the actual tile values from tilemap
+	char tileTL = game->getTile(game, tileLeft, tileTop);
+	char tileTR = game->getTile(game, tileRight, tileTop);
+	char tileBL = game->getTile(game, tileLeft, tileBottom);
+	char tileBR = game->getTile(game, tileRight, tileBottom);
+
+	// if any collisions detected, return true
+	if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
+		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D')
+		return true;
+
+	// if not colliding, return false
+	return false;
+}
+
+// check for collisions with tilemap on y axis
+bool Enemy::isCollidingY() {
+	// calculate x,y coords of surrounding tiles
+	// assumes entities are no bigger than 1 standard tile width
+	int tileLeft = (int)posX / game->tileWidth;
+	int tileRight = (int)(posX / game->tileWidth) + 1;
+	int tileTop = (int)(newPosY / game->tileHeight) + 1;
+	int tileBottom = (int)newPosY / game->tileHeight;
+
+	// get the actual tile values from tilemap
+	char tileTL = game->getTile(game, tileLeft, tileTop);
+	char tileTR = game->getTile(game, tileRight, tileTop);
+	char tileBL = game->getTile(game, tileLeft, tileBottom);
+	char tileBR = game->getTile(game, tileRight, tileBottom);
+
+	// ceiling collision, set y velocity to 0
+	if (tileTL == '#' || tileTR == '#' || tileTL == 'D' || tileTR == 'D') {
+		velY = 0;
+		return true;
+	}
+
+	// ground collision, set jumping flag back to false
+	if (tileBL == '#' || tileBR == '#' || tileBL == 'D' || tileBR == 'D') {
+		onGround = true;
+		return true;
+	}
+
+	// if not colliding, return false
+	return false;
+}
+
+// update entity position based on velocity
+void Enemy::updatePosition() {
+
+	// calculate proposed new position
+	newPosX = posX + (velX * game->deltaTime);
+	newPosY = posY + (velY * game->deltaTime);
+
+	// check for collision with tilemap in x axis
+	if (!isCollidingX())
+		posX = newPosX;
+
+	// check for collision in with tilemap y axis
+	if (!isCollidingY())
+		posY = newPosY;
+
+	// deceleration on x axis
+	velX = 0;
+
+
+	// apply gravity 
+	if (!onGround)
+		velY -= game->gravityRate;
+
+
+}
+
+// draws the entity
+void Enemy::draw() {
+
+	updatePosition();
+
+	if (playerSpriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
+		playerSpriteFrame = 0;
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)playerSpriteFrame]);
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(posX, posY);
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(posX + game->tileWidth, posY);
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(posX + game->tileWidth, posY + game->tileHeight);
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(posX, posY + game->tileHeight);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+}
 
