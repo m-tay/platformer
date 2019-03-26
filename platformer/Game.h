@@ -14,7 +14,7 @@ class Game
 {
 	public:
 		// global parameters
-		bool debug = false;	// flag to include debug information
+		bool debug = true;	// flag to include debug information
 		int screenWidth = 900, screenHeight = 700;
 		bool keys[256];
 		bool leftPressed = false;
@@ -33,8 +33,11 @@ class Game
 		float coinSpriteFrame = 0;
 		int playerScore = 0;
 
+		// pre computes
 		int levelActualWidth = levelWidth * tileWidth;
 		int levelActualHeight = levelHeight * tileHeight;
+		int halfTileH = tileHeight / 2;
+		int halfTileW = tileWidth / 2;
 
 		// deltatime variables
 		int oldTimeSinceStart;	// used to calculate deltatime

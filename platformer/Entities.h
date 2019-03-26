@@ -60,14 +60,21 @@ public:
 	char tileBR;
 	bool onGround;	// holds whether entity is on ground
 	bool jumping;	// holds whether entity is in process of jumping
+	bool alive = true;	// holds whether entity is alive
 	int jumpTime;	// holds how long entity has been in air
 	float playerSpriteFrame = 0.0f; // tracks the playerSpriteFrame for animating the sprite
 	char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
-	
+
+	// holds tile coords surrounding entity (x,y)
+	int tileLeft, tileRight, tileTop, tileBottom;
+
 	// spriteSet holds all a vector of GLuint arrays to store all the textures
 	// vector[0] - walking animation	
 	vector<vector<GLuint> >spriteSet;
-	
+
+	// calculates the cartesian coords of surrounding tiles
+	void calculateSurroundingTiles();
+
 	// calculates the tiles around the entity
 	void checkUpdateCollectables();
 
@@ -82,6 +89,9 @@ public:
 
 	// update entity position if standing on top of a moving platform
 	void trackMovingPlatforms();
+
+	// check for collisions with enemies
+	bool isCollidingWithEnemies();
 
 	// update entity position based on velocity
 	void updatePosition();
@@ -110,14 +120,21 @@ public:
 	char tileBR;
 	bool onGround;	// holds whether entity is on ground
 	bool jumping;	// holds whether entity is in process of jumping
+	bool alive = true; // holds whether entity is alive
 	int jumpTime;	// holds how long entity has been in air
 	float spriteFrame = 0.0f; // tracks the enemy1 sprite frame for animating the sprite
 	char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
 	bool movingPosX = true;
 
-					   // spriteSet holds all a vector of GLuint arrays to store all the textures
-					   // vector[0] - walking animation	
+	// holds tile coords surrounding entity (x,y)
+	int tileLeft, tileRight, tileTop, tileBottom;
+
+	// spriteSet holds all a vector of GLuint arrays to store all the textures
+	// vector[0] - walking animation	
 	vector<vector<GLuint> >spriteSet;
+
+	// calculates the cartesian coords of surrounding tiles
+	void calculateSurroundingTiles();
 
 	// calculates the tiles around the entity
 	void checkUpdateCollectables();
