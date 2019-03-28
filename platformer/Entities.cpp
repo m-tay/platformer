@@ -393,10 +393,8 @@ void Entity::draw() {
 		glEnd();
 
 		// draw collision circle
-		glPointSize(10.0f);
-		glBegin(GL_POINTS);
-			glVertex2f(posX + game->halfTileW, posY + game->halfTileW);
-		glEnd();
+		// shift x,y by half a tile, because entity position is stored from bottom left
+		game->drawCircle(posX + game->halfTileW, posY + game->halfTileW, game->halfTileW);
 
 	}
 
@@ -544,7 +542,7 @@ void Enemy::draw() {
 	if (game->debug) {
 		calculateSurroundingTiles();	// calculates surrounding tiles
 
-										// draw tile mapping 
+		// draw detected surrounding tiles
 		glBegin(GL_LINE_LOOP);
 		glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight);
 		glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
@@ -574,10 +572,8 @@ void Enemy::draw() {
 		glEnd();
 
 		// draw collision circle
-		glPointSize(10.0f);
-		glBegin(GL_POINTS);
-		glVertex2f(posX + game->halfTileW, posY + game->halfTileW);
-		glEnd();
+		// shift x,y by half a tile, because entity position is stored from bottom left
+		game->drawCircle(posX + game->halfTileW, posY + game->halfTileW, game->halfTileW);
 
 	}
 }
