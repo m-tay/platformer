@@ -136,20 +136,11 @@ public:
 	// calculates the cartesian coords of surrounding tiles
 	void calculateSurroundingTiles();
 
-	// calculates the tiles around the entity
-	void checkUpdateCollectables();
-
 	// check for collisions with tilemap on x axis
 	bool isCollidingX();
 
 	// check for collisions with tilemap on y axis
 	bool isCollidingY();
-
-	// check for collisions with moving platforms 
-	bool isCollidingWithMovingPlatform();
-
-	// update entity position if standing on top of a moving platform
-	void trackMovingPlatforms();
 
 	// update entity position based on velocity
 	void updatePosition();

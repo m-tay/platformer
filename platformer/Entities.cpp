@@ -292,13 +292,42 @@ void Entity::trackMovingPlatforms() {
 		}
 	}
 }
-// check for collisions with enemies
+// check for collisions with enemies - uses circle to circle collision detection for performance
+// purposes, there are lots of collisions to make. This will just be used for tile-sized enemies, 
+// as bounding circles are excellent approximations for the sprites used
 bool Entity::isCollidingWithEnemies() {
 
-	// for each enemy, check tile overlaps
+	// offset x,y pos by half tile widths to calc bounding circle
+	float entityX = posX + game->halfTileW;
+	float entityY = posY + game->halfTileH;
 
+	// for each enemy
+	for(int i = 0; i < game->enemies.size(); i++) {
 
+		// offset x,y pos by half tile widths to calc bounding circle
+		float enemyX = game->enemies.at(i)->posX + game->halfTileW;
+		float enemyY = game->enemies.at(i)->posY + game->halfTileH;
 
+		// debug mode - draw collision detection distance
+		if(game->debug) {
+			glBegin(GL_LINES);
+				glVertex2f(entityX, entityY);
+				glVertex2f(enemyX, enemyY);
+			glEnd();
+		}
+
+		// calculate distance between circles
+		float distX = entityX - enemyX;
+		float distY = entityY - enemyY;
+		float dist = sqrt((distX * distX) + (distY * distY));
+
+		// collision detection - check if distance between circles is less than sum of radius (tile width)
+		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+			return true;				// collision detected
+		}
+	}
+
+	// if no collisions detected for any enemy, return false
 	return false;
 }
 
@@ -319,6 +348,11 @@ void Entity::updatePosition() {
 	// check for collision in with tilemap y axis
 	if (!isCollidingY() && !isCollidingWithMovingPlatform())
 		posY = newPosY;
+
+	// check for collisions with enemies
+	if (isCollidingWithEnemies()) {
+		cout << "COLLISION WITH ENEMY" << endl;
+	}
 
 	// deceleration on x axis
 	velX = 0;
