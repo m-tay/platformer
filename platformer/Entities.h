@@ -98,6 +98,9 @@ public:
 
 	// draws the entity
 	void draw();
+
+	// starts the entity's death animation
+	void deathAnimation();
 };
 
 // class for character entities

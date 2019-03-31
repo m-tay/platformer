@@ -323,6 +323,8 @@ bool Entity::isCollidingWithEnemies() {
 
 		// collision detection - check if distance between circles is less than sum of radius (tile width)
 		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+			velY += 1.5f;				// add a big jump before falling off screen dead
+			onGround = false;			// set onGround flag so gravity applies
 			return true;				// collision detected
 		}
 	}
@@ -334,30 +336,46 @@ bool Entity::isCollidingWithEnemies() {
 
 // update entity position based on velocity
 void Entity::updatePosition() {
-	// update for collisions with collectibles, update them
-	checkUpdateCollectables();
-
+	
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
 	newPosY = posY + (velY * game->deltaTime);  
 
-	// check for collision with tilemap in x axis
-	if (!isCollidingX() && !isCollidingWithMovingPlatform())
-		posX = newPosX;
+	// perform collision detection if player is alive
+	if (alive) {
 
-	// check for collision in with tilemap y axis
-	if (!isCollidingY() && !isCollidingWithMovingPlatform())
+		// update for collisions with collectibles, update them
+		checkUpdateCollectables();
+
+		// check for collision with tilemap in x axis
+		if (!isCollidingX() && !isCollidingWithMovingPlatform())
+			posX = newPosX;
+
+		// check for collision in with tilemap y axis
+		if (!isCollidingY() && !isCollidingWithMovingPlatform())
+			posY = newPosY;
+
+		// check for collisions with enemies
+		if (isCollidingWithEnemies()) {
+			alive = false;
+		}
+
+		// deceleration on x axis
+		velX = 0;
+
+		// also update position on moving platforms
+		trackMovingPlatforms();
+	}
+	// if player is not alive
+	else { 
+		// update player position with no collision detection
+		posX = newPosX;
 		posY = newPosY;
 
-	// check for collisions with enemies
-	if (isCollidingWithEnemies()) {
-		cout << "COLLISION WITH ENEMY" << endl;
+		// check if player death animation should trigger game over screen
+		if (posY < -3000)
+			game->gameStage = "gameover";
 	}
-
-	// deceleration on x axis
-	velX = 0;
-
-	trackMovingPlatforms();
 
 	// apply gravity 
 	if (!onGround)

@@ -20,6 +20,7 @@ Game game;
 // create entities
 Entity playerEntity(game, 32.0f, 32.0f);		// player entity
 Enemy enemy1(game, 384.0f, 160.0f);
+Enemy enemy2(game, 600.0f, 32.0f);
 
 // create moving platform object
 MovingPlatform platform1(game, 96.0f, 96.0f);	// moving platform
@@ -52,6 +53,10 @@ int loadTextures()
 	game.bgTexture.push_back(SOIL_load_OGL_texture
 	(
 		"textures/bg/Background.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.bgTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/bg/gameoverbg.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
@@ -169,6 +174,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -278,6 +287,7 @@ int loadTextures()
 	// add loaded textures to entities
 	playerEntity.spriteSet.push_back(game.playerSpriteRunning);
 	enemy1.spriteSet.push_back(game.enemy1Texture);
+	enemy2.spriteSet.push_back(game.enemy1Texture);
 
 	return true;
 }
@@ -367,7 +377,7 @@ void drawLevel() {
 	}
 }
 
-void initLevel() {
+void initLevel1() {
 
 	// levelMap encodes each tile as a character in a string
 	// key: - : empty space
@@ -409,6 +419,16 @@ void initLevel() {
 
 	// reverses level map string so it is rendered the right way round
 	reverse(game.levelMap.begin(), game.levelMap.end());
+
+	// sets positions of entities
+	playerEntity.posX = 32.0f;
+	playerEntity.posY = 32.0f;	
+	enemy1.posX = 384.0f;
+	enemy1.posY = 160.0f;
+	enemy2.posX = 600.0f;
+	enemy2.posY = 32.0f;
+
+		playerEntity.alive = true;
 }
 
 // resizes opengl windows
@@ -432,6 +452,7 @@ void init() {
 	// add entities to vector
 	game.movingPlatforms.push_back(&platform1);
 	game.enemies.push_back(&enemy1);
+	game.enemies.push_back(&enemy2);
 }
 
 // processes key presses
@@ -460,13 +481,15 @@ void keyOperations() {
 			}
 		}
 	}
-	
-	if (game.keyStates['a'])
-		playerEntity.velX = -game.playerAccelRate;
 
-	if (game.keyStates['d'])
-		playerEntity.velX = game.playerAccelRate;
+	// only allow x-axis movement when player is alive
+	if (playerEntity.alive) {
+		if (game.keyStates['a'])
+			playerEntity.velX = -game.playerAccelRate;
 
+		if (game.keyStates['d'])
+			playerEntity.velX = game.playerAccelRate;
+	}
 }
 
 void keySpecialOperations() {
@@ -558,6 +581,50 @@ void drawTitleScreen() {
 
 }
 
+void drawGameOverScreen() {
+	// draw background
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[1]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(1.0, 1.0);	// bl
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(0, game.screenHeight);	// tl
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(game.screenWidth, game.screenHeight);	// tr
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(game.screenWidth, 0);	// br
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+	// draw start button
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(400.0f, 200.0f);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(500.0f, 200.0f);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(500.0f, 235.0f);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(400.0f, 235.0f); // tl
+
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+}
+
 void processTitleScreenInput() {
 	if(game.leftPressed) {
 		if(game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
@@ -566,10 +633,29 @@ void processTitleScreenInput() {
 	}
 }
 
+void processGameOverScreenInput() {
+	if (game.leftPressed) {
+		if (game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
+			initLevel1();
+			game.gameStage = "level1";
+		}
+	}
+}
+
 void doTitleScreen() {
 	// draw background
 	drawTitleScreen();
+
+	// process inputs for buttons
 	processTitleScreenInput();
+}
+
+void doGameOverScreen() {
+	// draw background
+	drawGameOverScreen();
+
+	// process inputs for buttons
+	processGameOverScreenInput();
 }
 
 void doGameLevel() {
@@ -621,6 +707,8 @@ void display()
 		doTitleScreen();
 	if(game.gameStage == "level1")
 		doGameLevel();
+	if (game.gameStage == "gameover")
+		doGameOverScreen();
 
 	//glPopMatrix();
 	glFlush();
@@ -645,7 +733,7 @@ int main(int argc, char **argv) {
 	glutCreateWindow("Matt's platform game");
 
 	init();
-	initLevel();	// run level initialisation
+	initLevel1();	// run level initialisation
 	loadTextures();
 
 	int oldTimeSinceStart = 0; // used to calc delta time
