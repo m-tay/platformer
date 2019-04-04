@@ -323,7 +323,7 @@ bool Entity::isCollidingWithEnemies() {
 
 		// collision detection - check if distance between circles is less than sum of radius (tile width)
 		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
-			velY += 1.5f;				// add a big jump before falling off screen dead
+			velY = 1.5f;				// add a big jump before falling off screen dead
 			onGround = false;			// set onGround flag so gravity applies
 			return true;				// collision detected
 		}
