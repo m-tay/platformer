@@ -174,6 +174,13 @@ int loadTextures()
 	(
 		"textures/sprites/4/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.doorTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/DoorShut.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.doorTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/DoorOpen.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	// check for errors
 	if (game.tileTextures.at(0) == 0) {
@@ -311,6 +318,14 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, game.doorTexture[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.doorTexture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	// error checking
 	GLenum errorCode = glGetError();
 	if (errorCode != GL_NO_ERROR) {
@@ -375,7 +390,7 @@ void drawLevel() {
 		for (int y = 0; y < game.levelHeight; y++) {
 			char tile = game.getTile(&game, x, y);
 
-			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G') {
+			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd') {
 
 				// enable and bind texture relevant texture
 				glEnable(GL_TEXTURE_2D);
@@ -392,6 +407,10 @@ void drawLevel() {
 
 				if (tile == 'G') { // endgame gem 
 					glBindTexture(GL_TEXTURE_2D, game.gemTexture[(int)game.gemSpriteFrame]);
+				}
+
+				if (tile == 'd') { // door tile ([0] = shut, [1] = open
+					glBindTexture(GL_TEXTURE_2D, game.doorTexture[0]);
 				}
 
 				// check and reset frame limit for sprites
@@ -422,12 +441,13 @@ void drawLevel() {
 }
 
 void initLevel1() {
-
 	// levelMap encodes each tile as a character in a string
 	// key: - : empty space
 	//      # : ground tile
 	//		D : dirt tile (like ground tile but nothing on top)
 	//		1 : collectable (value 1)
+	//		G : gem (value 10) - level objective
+	//		d : door - exits level when gem collected
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -458,7 +478,7 @@ void initLevel1() {
 	game.levelMap += "D------------------------------------------------1-------------D";
 	game.levelMap += "D-------------------------------------1--------#####-----------D";
 	game.levelMap += "D---------------#####---------------#####----------------------D";
-	game.levelMap += "D---------------DDDDD---------------DDDDD----------------------D";
+	game.levelMap += "D---------------DDDDD-------d-------DDDDD----------------------D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -467,12 +487,13 @@ void initLevel1() {
 	// sets positions of entities
 	playerEntity.posX = 32.0f;
 	playerEntity.posY = 32.0f;	
-	enemy1.posX = 2920.0f;
+	enemy1.posX = 1200.0f;
 	enemy1.posY = 32.0f;
 	enemy2.posX = 600.0f;
 	enemy2.posY = 32.0f;
 
-		playerEntity.alive = true;
+	// set player status to be alive (in case of restarting level)
+	playerEntity.alive = true;
 }
 
 // resizes opengl windows

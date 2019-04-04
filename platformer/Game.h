@@ -62,6 +62,7 @@ public:
 	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy
 	vector<GLuint> buttons;				// stores button textures
 	vector<GLuint> gemTexture;			// stores the object gem sprite
+	vector<GLuint> doorTexture;			// stores the door texture ([0] for shut, [1] for open)
 
 	// vector of vectors to store textures
 	vector<vector<GLuint> > playerTextures;

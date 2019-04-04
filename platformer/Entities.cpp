@@ -188,6 +188,30 @@ void Entity::checkUpdateCollectables() {
 		game->playerScore++;	// update score
 		game->emptyTile(game, tileRight, tileBottom);
 	}
+
+	if (tileTL == 'G') {
+		game->playerScore += 10;	// update score
+		game->emptyTile(game, tileLeft, tileTop);
+	}
+
+	if (tileTR == 'G') {
+		game->playerScore += 10;	// update score
+		game->emptyTile(game, tileRight, tileTop);
+	}
+
+	if (tileBL == 'G') {
+		game->playerScore += 10;	// update score
+		game->emptyTile(game, tileLeft, tileBottom);
+	}
+
+	if (tileBR == 'G') {
+		game->playerScore += 10;	// update score
+		game->emptyTile(game, tileRight, tileBottom);
+	}
+
+
+
+
 }
 
 // check for collisions with tilemap on x axis
