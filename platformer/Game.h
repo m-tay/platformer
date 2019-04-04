@@ -13,7 +13,7 @@ class Enemy;
 class Game {
 public:
 	// global parameters
-	bool debug = true;	// flag to include debug information
+	bool debug = false; // flag to include debug information
 	int screenWidth = 900, screenHeight = 700;
 	bool keys[256];
 	bool leftPressed = false;
@@ -30,6 +30,7 @@ public:
 	float gravityRate = 0.004f;	// the rate gravity works at
 								// pre-calculations
 	float coinSpriteFrame = 0;
+	float gemSpriteFrame = 0;
 	int playerScore = 0;
 
 	// pre computes
@@ -54,12 +55,13 @@ public:
 	string levelMap;	// stores level tilemap
 
 	// textures
-	vector<GLuint> tileTextures;			// stores level tile textures
+	vector<GLuint> tileTextures;		// stores level tile textures
 	vector<GLuint> bgTexture;			// stores background textures
-	vector<GLuint> playerSpriteRunning;			// stores player sprite
+	vector<GLuint> playerSpriteRunning;	// stores player sprite
 	vector<GLuint> coinSprite;			// stores spinning coin sprite
-	vector<GLuint> enemy1Texture;
+	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy
 	vector<GLuint> buttons;				// stores button textures
+	vector<GLuint> gemTexture;			// stores the object gem sprite
 
 	// vector of vectors to store textures
 	vector<vector<GLuint> > playerTextures;

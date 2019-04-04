@@ -158,9 +158,30 @@ int loadTextures()
 	(
 		"textures/sprites/3/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.gemTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/4/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.gemTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/4/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.gemTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/4/tile002.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.gemTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/4/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 
 	// check for errors
 	if (game.tileTextures.at(0) == 0) {
+		cout << "Error loading textures" << endl;
+		exit(0);
+	}
+
+	if (game.gemTexture[0] == 0) {
 		cout << "Error loading textures" << endl;
 		exit(0);
 	}
@@ -263,16 +284,32 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, game.enemy1Texture[2]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.gemTexture[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.gemTexture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.gemTexture[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.gemTexture[3]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	// error checking
 	GLenum errorCode = glGetError();
@@ -338,7 +375,7 @@ void drawLevel() {
 		for (int y = 0; y < game.levelHeight; y++) {
 			char tile = game.getTile(&game, x, y);
 
-			if (tile == '#' || tile == 'D' || tile == '1') {
+			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G') {
 
 				// enable and bind texture relevant texture
 				glEnable(GL_TEXTURE_2D);
@@ -353,22 +390,29 @@ void drawLevel() {
 					glBindTexture(GL_TEXTURE_2D, game.coinSprite[(int)game.coinSpriteFrame]);
 				}
 
+				if (tile == 'G') { // endgame gem 
+					glBindTexture(GL_TEXTURE_2D, game.gemTexture[(int)game.gemSpriteFrame]);
+				}
+
+				// check and reset frame limit for sprites
 				if (game.coinSpriteFrame > 15)
 					game.coinSpriteFrame = 0;
 
+				if (game.gemSpriteFrame > 4)
+					game.gemSpriteFrame = 0;
+
 				glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight);
 
-				glTexCoord2d(1.0, 1.0);
-				glVertex2f(x * game.tileWidth, y * game.tileHeight);
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight + game.tileHeight);
 
-				glTexCoord2d(1.0, 0.0);
-				glVertex2f(x * game.tileWidth, y * game.tileHeight + game.tileHeight);
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight + game.tileHeight);
 
-				glTexCoord2d(0.0, 0.0);
-				glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight + game.tileHeight);
-
-				glTexCoord2d(0.0, 1.0);
-				glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight);
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight);
 				glEnd();
 
 				glDisable(GL_TEXTURE_2D);
@@ -398,23 +442,23 @@ void initLevel1() {
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D-------------------------------------------------G------------D";
+	game.levelMap += "D----------------------------------------------#######---------D";
 	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D----------------------------------------------------------1-1-D";
+	game.levelMap += "D---------------------------------------------------------#####D";
 	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D-----------------------------------------------1-1-1----------D";
+	game.levelMap += "D----------------------------------------------#######-------1-D";
+	game.levelMap += "D-----------------------------------------------------------###D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-----------------------------------------------1-1-1-1--------D";
-	game.levelMap += "D----------------------------------------------#########-----1-D";
-	game.levelMap += "D------------------------------------------------------------##D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D----------------------------------------------------------1---D";
-	game.levelMap += "D---------------------------------------------------------###--D";
+	game.levelMap += "D--------------------------------------------------------1-----D";
+	game.levelMap += "D------------------------------------------------------#####---D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D------------------------------------------------1-------------D";
 	game.levelMap += "D-------------------------------------1--------#####-----------D";
-	game.levelMap += "D-----------------------------------#####----------------------D";
-	game.levelMap += "D-----------------------------------DDDDD----------------------D";
+	game.levelMap += "D---------------#####---------------#####----------------------D";
+	game.levelMap += "D---------------DDDDD---------------DDDDD----------------------D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -423,8 +467,8 @@ void initLevel1() {
 	// sets positions of entities
 	playerEntity.posX = 32.0f;
 	playerEntity.posY = 32.0f;	
-	enemy1.posX = 384.0f;
-	enemy1.posY = 160.0f;
+	enemy1.posX = 2920.0f;
+	enemy1.posY = 32.0f;
 	enemy2.posX = 600.0f;
 	enemy2.posY = 32.0f;
 
@@ -665,6 +709,7 @@ void doGameLevel() {
 	playerEntity.draw();
 	playerEntity.playerSpriteFrame += 0.01f;	// update playerSpriteFrame animation
 	game.coinSpriteFrame += 0.01f;				// update coin sprite frame
+	game.gemSpriteFrame += 0.01f;				// update gem sprite frame
 	
 	// draw all moving platforms
 	for (int i = 0; i < game.movingPlatforms.size(); i++) {
