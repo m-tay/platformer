@@ -76,7 +76,7 @@ public:
 	void calculateSurroundingTiles();
 
 	// calculates the tiles around the entity
-	void checkUpdateCollectables();
+	void checkSpecialTiles();
 
 	// check for collisions with tilemap on x axis
 	bool isCollidingX();

@@ -58,6 +58,10 @@ int loadTextures()
 	(
 		"textures/bg/gameoverbg.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.bgTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/bg/levelcompletebg.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
 		"textures/sprites/1/0.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
@@ -203,6 +207,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glBindTexture(GL_TEXTURE_2D, game.bgTexture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[2]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -410,7 +418,16 @@ void drawLevel() {
 				}
 
 				if (tile == 'd') { // door tile ([0] = shut, [1] = open
-					glBindTexture(GL_TEXTURE_2D, game.doorTexture[0]);
+
+					// only draw door open tile when gem is collected
+					if (game.gemCollected) {
+						glBindTexture(GL_TEXTURE_2D, game.doorTexture[1]);
+					}
+					else {
+						glBindTexture(GL_TEXTURE_2D, game.doorTexture[0]);
+					}
+					
+
 				}
 
 				// check and reset frame limit for sprites
@@ -494,6 +511,12 @@ void initLevel1() {
 
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
+
+	// set player score to 0
+	game.playerScore = 0;
+
+	// set the gem as uncollected
+	game.gemCollected = false;
 }
 
 // resizes opengl windows
@@ -502,12 +525,13 @@ void reshape(int width, int height)	{
 															// we will use these values to set the coordinate system
 	glViewport(0, 0, width, height);
 
-	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
+	glMatrixMode(GL_PROJECTION);						
 	glLoadIdentity();
 
-	gluOrtho2D(0, game.screenWidth, 0, game.screenHeight);        // set the coordinate system for the window
+	// set the coordinate system for the window
+	gluOrtho2D(0, game.screenWidth, 0, game.screenHeight);        
 
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glMatrixMode(GL_MODELVIEW);						
 	glLoadIdentity();
 }
 
@@ -652,17 +676,17 @@ void drawGameOverScreen() {
 	glBindTexture(GL_TEXTURE_2D, game.bgTexture[1]);
 
 	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
-	glTexCoord2d(0.0, 1.0);
-	glVertex2f(1.0, 1.0);	// bl
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(1.0, 1.0);	// bl
 
-	glTexCoord2d(0.0, 0.0);
-	glVertex2f(0, game.screenHeight);	// tl
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(0, game.screenHeight);	// tl
 
-	glTexCoord2d(1.0, 0.0);
-	glVertex2f(game.screenWidth, game.screenHeight);	// tr
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(game.screenWidth, game.screenHeight);	// tr
 
-	glTexCoord2d(1.0, 1.0);
-	glVertex2f(game.screenWidth, 0);	// br
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(game.screenWidth, 0);	// br
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -672,17 +696,61 @@ void drawGameOverScreen() {
 	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
 
 	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
-	glTexCoord2d(0.0, 1.0);
-	glVertex2f(400.0f, 200.0f);	// bl
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(400.0f, 200.0f);	// bl
 
-	glTexCoord2d(1.0, 1.0);
-	glVertex2f(500.0f, 200.0f);	// br
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(500.0f, 200.0f);	// br
 
-	glTexCoord2d(1.0, 0.0);
-	glVertex2f(500.0f, 235.0f);	// tr
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(500.0f, 235.0f);	// tr
 
-	glTexCoord2d(0.0, 0.0);
-	glVertex2f(400.0f, 235.0f); // tl
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(400.0f, 235.0f); // tl
+
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+}
+
+void drawLevelCompleteScreen() {
+	// draw background
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[2]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(1.0, 1.0);	// bl
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(0, game.screenHeight);	// tl
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(game.screenWidth, game.screenHeight);	// tr
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(game.screenWidth, 0);	// br
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+	// draw start button
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(400.0f, 200.0f);	// bl
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(500.0f, 200.0f);	// br
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(500.0f, 235.0f);	// tr
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(400.0f, 235.0f); // tl
 
 	glEnd();
 
@@ -701,8 +769,17 @@ void processTitleScreenInput() {
 void processGameOverScreenInput() {
 	if (game.leftPressed) {
 		if (game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
+			game.gameStage = "title";
 			initLevel1();
-			game.gameStage = "level1";
+		}
+	}
+}
+
+void processLevelCompleteScreenInput() {
+	if (game.leftPressed) {
+		if (game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
+			game.gameStage = "title";
+			initLevel1();
 		}
 	}
 }
@@ -721,6 +798,14 @@ void doGameOverScreen() {
 
 	// process inputs for buttons
 	processGameOverScreenInput();
+}
+
+void doLevelCompleteScreen() {
+	// draw background
+	drawLevelCompleteScreen();
+
+	// process inputs for buttons
+	processLevelCompleteScreenInput();
 }
 
 void doGameLevel() {
@@ -775,6 +860,8 @@ void display()
 		doGameLevel();
 	if (game.gameStage == "gameover")
 		doGameOverScreen();
+	if (game.gameStage == "levelcomplete")
+		doLevelCompleteScreen();
 
 	//glPopMatrix();
 	glFlush();

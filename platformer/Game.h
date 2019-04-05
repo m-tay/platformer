@@ -6,20 +6,18 @@
 
 using namespace std;
 
-class MovingPlatform;	// forward declares
+// forward declares
+class MovingPlatform;	
 class Entity;
 class Enemy;
 
 class Game {
 public:
+	// DEBUG FLAG - set to true to view collision detection drawing 
+	bool debug = false;
+
 	// global parameters
-	bool debug = false; // flag to include debug information
 	int screenWidth = 900, screenHeight = 700;
-	bool keys[256];
-	bool leftPressed = false;
-	int mouseX;
-	int mouseY;
-	std::string gameStage = "title";
 	int levelWidth = 64;	// store level dimensions (in tiles)
 	int levelHeight = 32;
 	int tileWidth = 32;		// store tile dimension information
@@ -27,13 +25,10 @@ public:
 	float playerAccelRate = 0.35f;	// param for player acceleration
 	float playerJumpRate = 0.7f;	// param for player jump rate
 	float playerDecelRate = 0.2f;
-	float gravityRate = 0.004f;	// the rate gravity works at
-								// pre-calculations
-	float coinSpriteFrame = 0;
-	float gemSpriteFrame = 0;
-	int playerScore = 0;
+	float gravityRate = 0.004f;		// the rate gravity works at
+									// pre-calculations
 
-	// pre computes
+	// pre-computes
 	int levelActualWidth = levelWidth * tileWidth;
 	int levelActualHeight = levelHeight * tileHeight;
 	int halfTileH = tileHeight / 2;
@@ -43,9 +38,13 @@ public:
 	int oldTimeSinceStart;	// used to calculate deltatime
 	int deltaTime;			// used to store deltatime
 
-	// arrays to store all possible keystates
+	// key and mouse processing
 	bool* keyStates = new bool[256]();
 	bool* keySpecialStates = new bool[256]();
+	bool keys[256];
+	bool leftPressed = false;
+	int mouseX;
+	int mouseY;
 
 	// camera position
 	float camX = 0.0f;
@@ -53,6 +52,9 @@ public:
 	
 	// game variables
 	string levelMap;	// stores level tilemap
+	int playerScore = 0;
+	std::string gameStage = "title";	// stores what part of the game is running
+	bool gemCollected = false;			// tracks whether player can exit level
 
 	// textures
 	vector<GLuint> tileTextures;		// stores level tile textures
@@ -63,6 +65,10 @@ public:
 	vector<GLuint> buttons;				// stores button textures
 	vector<GLuint> gemTexture;			// stores the object gem sprite
 	vector<GLuint> doorTexture;			// stores the door texture ([0] for shut, [1] for open)
+
+	// texture frame counters
+	float coinSpriteFrame = 0;
+	float gemSpriteFrame = 0;
 
 	// vector of vectors to store textures
 	vector<vector<GLuint> > playerTextures;

@@ -154,7 +154,7 @@ void Entity::calculateSurroundingTiles() {
 }
 
 // calculates the tiles around the entity
-void Entity::checkUpdateCollectables() {
+void Entity::checkSpecialTiles() {
 	// calculate x,y coords of surrounding tiles
 	// assumes entities are no bigger than 1 standard tile width
 	tileLeft = (int)newPosX / game->tileWidth;
@@ -167,7 +167,7 @@ void Entity::checkUpdateCollectables() {
 	char tileTR = game->getTile(game, tileRight, tileTop);
 	char tileBL = game->getTile(game, tileLeft, tileBottom);
 	char tileBR = game->getTile(game, tileRight, tileBottom);
-
+	
 	// update player score, remove collectable
 	if(tileTL == '1') {
 		game->playerScore++;	// update score
@@ -192,26 +192,34 @@ void Entity::checkUpdateCollectables() {
 	if (tileTL == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileLeft, tileTop);
+		game->gemCollected = true;
 	}
 
 	if (tileTR == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileRight, tileTop);
+		game->gemCollected = true;
 	}
 
 	if (tileBL == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileLeft, tileBottom);
+		game->gemCollected = true;
 	}
 
 	if (tileBR == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileRight, tileBottom);
+		game->gemCollected = true;
 	}
 
+	// if gem is collected, check for level exit collision
+	if (game->gemCollected) {
 
-
-
+		if (tileTL == 'd' || tileTR == 'd' || tileBL == 'd' || tileBR == 'd') {
+			game->gameStage = "levelcomplete";
+		}
+	}
 }
 
 // check for collisions with tilemap on x axis
@@ -369,7 +377,7 @@ void Entity::updatePosition() {
 	if (alive) {
 
 		// update for collisions with collectibles, update them
-		checkUpdateCollectables();
+		checkSpecialTiles();
 
 		// check for collision with tilemap in x axis
 		if (!isCollidingX() && !isCollidingWithMovingPlatform())
