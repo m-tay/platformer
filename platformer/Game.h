@@ -63,12 +63,14 @@ public:
 	vector<GLuint> coinSprite;			// stores spinning coin sprite
 	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy
 	vector<GLuint> buttons;				// stores button textures
+	vector<GLuint> buttonGlow;			// stores button glow textures
 	vector<GLuint> gemTexture;			// stores the object gem sprite
 	vector<GLuint> doorTexture;			// stores the door texture ([0] for shut, [1] for open)
 
 	// texture frame counters
-	float coinSpriteFrame = 0;
-	float gemSpriteFrame = 0;
+	float coinSpriteFrame = 0;		// coin spin frame counter
+	float gemSpriteFrame = 0;		// gem shine frame counter
+	float cloudGlowSpriteFrame = 0;	// cloud glow frame counter
 
 	// vector of vectors to store textures
 	vector<vector<GLuint> > playerTextures;
@@ -77,6 +79,9 @@ public:
 	// vectors to store game objects
 	vector<MovingPlatform*> movingPlatforms;
 	vector<Enemy*> enemies;
+
+	// stores selected position on menuscreen
+	int menuScreenButton = 0;
 
 	// utility methods for running the game
 	// getTile returns the the tile at a given x,y coordinate

@@ -76,11 +76,47 @@ int loadTextures()
 
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
-		"textures/buttons/b-start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/buttons/Cloud_start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
-		"textures/buttons/b-quit.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/buttons/Cloud_quit.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttons.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_mainmenu.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_4.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_5.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_4.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttonGlow.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.coinSprite.push_back(SOIL_load_OGL_texture
 	(
@@ -227,10 +263,46 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttons[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttons[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glBindTexture(GL_TEXTURE_2D, game.buttons[1]);
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[3]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[4]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[5]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[6]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[7]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -551,22 +623,31 @@ void keyOperations() {
 		exit(0);
 
 	if (game.keyStates['w']) {
-		// check if player has left ground
-		if (playerEntity.onGround) {
-			playerEntity.onGround = false;	// flag player as not being on ground
-			playerEntity.jumping = true;	// flag player as jumping
-			playerEntity.jumpTime = glutGet(GLUT_ELAPSED_TIME);
-			playerEntity.velY = 1.3f;
+
+		// check if processing menu screen inputs
+		if (game.gameStage == "title") {
+			game.menuScreenButton--;	// go up on menu screen
+			game.keyStates['w'] = false;
 		}
+		// otherwise control player entities
+		else {
+			// check if player has left ground
+			if (playerEntity.onGround) {
+				playerEntity.onGround = false;	// flag player as not being on ground
+				playerEntity.jumping = true;	// flag player as jumping
+				playerEntity.jumpTime = glutGet(GLUT_ELAPSED_TIME);
+				playerEntity.velY = 1.3f;
+			}
 
-		// check if player is jumping
-		if (playerEntity.jumping) {
-			// calculate how long player has been jumping
-			int jumpTime = glutGet(GLUT_ELAPSED_TIME) - playerEntity.jumpTime;
+			// check if player is jumping
+			if (playerEntity.jumping) {
+				// calculate how long player has been jumping
+				int jumpTime = glutGet(GLUT_ELAPSED_TIME) - playerEntity.jumpTime;
 
-			// if player has been jumping less than 100ms, allow more up-velocity to be added
-			if (jumpTime < 150) {
-				playerEntity.velY = game.playerJumpRate;
+				// if player has been jumping less than 100ms, allow more up-velocity to be added
+				if (jumpTime < 150) {
+					playerEntity.velY = game.playerJumpRate;
+				}
 			}
 		}
 	}
@@ -579,6 +660,28 @@ void keyOperations() {
 		if (game.keyStates['d'])
 			playerEntity.velX = game.playerAccelRate;
 	}
+
+	if(game.keyStates['s']) {
+		game.menuScreenButton++;	// go down on menu screen
+		game.keyStates['s'] = false;
+	}
+
+	if (game.keyStates[' ']) { // spacebar
+		if(game.gameStage == "title") {
+			if(game.menuScreenButton == 0) {
+				initLevel1();
+				game.gameStage = "level1";
+			}
+			if(game.menuScreenButton == 1) {
+				exit(0);
+			}
+		}
+		else if (game.gameStage == "gameover") {
+			game.gameStage = "title";
+			game.keyStates[' '] = false;
+		}
+
+	}	
 }
 
 void keySpecialOperations() {
@@ -647,25 +750,92 @@ void drawTitleScreen() {
 
 	glDisable(GL_TEXTURE_2D);
 
+	// draw buttons
+	const int buttonSize = 150;
+
 	// draw start button
+	const int startButtonPosX = 150;
+	const int startButtonPosY = 250;
+
+
+	// glow effect
+	if (game.menuScreenButton == 0) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, game.buttonGlow[(int)game.cloudGlowSpriteFrame]);
+		glBegin(GL_QUADS);
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(startButtonPosX, startButtonPosY);	// bl
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(startButtonPosX + buttonSize, startButtonPosY);	// br
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(startButtonPosX + buttonSize, startButtonPosY + buttonSize);	// tr
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(startButtonPosX, startButtonPosY + buttonSize); // tl
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	// button texture
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+	glBegin(GL_QUADS); 	
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(startButtonPosX, startButtonPosY);	// bl
 
-	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
-		glTexCoord2d(0.0, 1.0);			
-		glVertex2f(400.0f, 200.0f);	// bl
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(startButtonPosX + buttonSize, startButtonPosY);	// br
 
-		glTexCoord2d(1.0, 1.0);			
-		glVertex2f(500.0f, 200.0f);	// br
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(startButtonPosX + buttonSize, startButtonPosY + buttonSize);	// tr
 
-		glTexCoord2d(1.0, 0.0);			
-		glVertex2f(500.0f, 235.0f);	// tr
-
-		glTexCoord2d(0.0, 0.0);			
-		glVertex2f(400.0f, 235.0f); // tl
-
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(startButtonPosX, startButtonPosY + buttonSize); // tl
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 
+	// draw quit button
+	const int quitButtonPosX = 150;
+	const int quitButtonPosY = 100;
+
+	// glow effect
+	if (game.menuScreenButton == 1) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, game.buttonGlow[(int)game.cloudGlowSpriteFrame]);
+		glBegin(GL_QUADS);
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(quitButtonPosX, quitButtonPosY);	// bl
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(quitButtonPosX + buttonSize, quitButtonPosY);	// br
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(quitButtonPosX + buttonSize, quitButtonPosY + buttonSize);	// tr
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(quitButtonPosX, quitButtonPosY + buttonSize); // tl
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	// button texture
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttons[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(quitButtonPosX, quitButtonPosY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(quitButtonPosX + buttonSize, quitButtonPosY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(quitButtonPosX + buttonSize, quitButtonPosY + buttonSize);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(quitButtonPosX, quitButtonPosY + buttonSize); // tl
+	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
 }
@@ -691,26 +861,49 @@ void drawGameOverScreen() {
 
 	glDisable(GL_TEXTURE_2D);
 
-	// draw start button
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+	// draw buttons
+	const int buttonSize = 150;
 
-	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+	// draw main menu button
+	const int mainMenuButtonPosX = 375;
+	const int mainMenuButtonPosY = 200;
+
+	// glow effect
+	glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, game.buttonGlow[(int)game.cloudGlowSpriteFrame]);
+		glBegin(GL_QUADS);
 		glTexCoord2d(0.0, 1.0);
-		glVertex2f(400.0f, 200.0f);	// bl
+		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
 
 		glTexCoord2d(1.0, 1.0);
-		glVertex2f(500.0f, 200.0f);	// br
+		glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
 
 		glTexCoord2d(1.0, 0.0);
-		glVertex2f(500.0f, 235.0f);	// tr
+		glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
 
 		glTexCoord2d(0.0, 0.0);
-		glVertex2f(400.0f, 235.0f); // tl
-
-	glEnd();
-
+		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
+		glEnd();
 	glDisable(GL_TEXTURE_2D);
+
+	// button texture
+	glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, game.buttons[1]);
+		glBegin(GL_QUADS);
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
+
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
+		glEnd();
+	glDisable(GL_TEXTURE_2D);
+
 
 }
 
@@ -759,32 +952,34 @@ void drawLevelCompleteScreen() {
 }
 
 void processTitleScreenInput() {
-	if(game.leftPressed) {
-		if(game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
-			game.gameStage = "level1";
-		}
-	}
+	// reset button to top if range of buttons exceeded
+	if (game.menuScreenButton > 1)
+		game.menuScreenButton = 0;
+
+	if (game.menuScreenButton < 0)
+		game.menuScreenButton = 1;
+
+
 }
 
 void processGameOverScreenInput() {
-	if (game.leftPressed) {
-		if (game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
-			game.gameStage = "title";
-			initLevel1();
-		}
-	}
+	
 }
 
 void processLevelCompleteScreenInput() {
-	if (game.leftPressed) {
-		if (game.mouseX >= 400 && game.mouseX <= 500 && game.mouseY >= 465 && game.mouseY <= 500) {
-			game.gameStage = "title";
-			initLevel1();
-		}
-	}
+
+
+
 }
 
 void doTitleScreen() {
+	// update cloud glow animation frames
+	game.cloudGlowSpriteFrame += 0.01f;
+
+	// check if frame of cloud glow anim needs resetting
+	if (game.cloudGlowSpriteFrame > 8)
+		game.cloudGlowSpriteFrame = 0;
+
 	// draw background
 	drawTitleScreen();
 
@@ -793,6 +988,13 @@ void doTitleScreen() {
 }
 
 void doGameOverScreen() {
+	// update cloud glow animation frames
+	game.cloudGlowSpriteFrame += 0.01f;
+
+	// check if frame of cloud glow anim needs resetting
+	if (game.cloudGlowSpriteFrame > 8)
+		game.cloudGlowSpriteFrame = 0;
+
 	// draw background
 	drawGameOverScreen();
 
