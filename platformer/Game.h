@@ -14,7 +14,7 @@ class Enemy;
 class Game {
 public:
 	// DEBUG FLAG - set to true to view collision detection drawing 
-	bool debug = false;
+	bool debug = true;
 
 	// global parameters
 	int screenWidth = 900, screenHeight = 700;

@@ -551,23 +551,23 @@ void initLevel1() {
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-------------------------------------------------G------------D";
+	game.levelMap += "D-----------------------------------------------1-1-1----------D";
 	game.levelMap += "D----------------------------------------------#######---------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D----------------------------------------------------------1-1-D";
 	game.levelMap += "D---------------------------------------------------------#####D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-----------------------------------------------1-1-1----------D";
-	game.levelMap += "D----------------------------------------------#######-------1-D";
+	game.levelMap += "D------------------------------------------G--------1----------D";
+	game.levelMap += "D----------------------------------------#####-----###-------1-D";
 	game.levelMap += "D-----------------------------------------------------------###D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------1-----D";
-	game.levelMap += "D------------------------------------------------------#####---D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D------------------------------------------------1-------------D";
-	game.levelMap += "D-------------------------------------1--------#####-----------D";
-	game.levelMap += "D---------------#####---------------#####----------------------D";
-	game.levelMap += "D---------------DDDDD-------d-------DDDDD----------------------D";
+	game.levelMap += "D--------------------------------------------------------1-1---D";
+	game.levelMap += "D-------------------------------------------------------#####--D";
+	game.levelMap += "D------------------------------------------------------#-------D";
+	game.levelMap += "D------------------------------------------------1-1-#---------D";
+	game.levelMap += "D-------------------------------------1-1-------#####----------D";
+	game.levelMap += "D---------------#####----------------#####---------------------D";
+	game.levelMap += "D---------------DDDDD----------------DDDDD---------------d-----D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -676,7 +676,7 @@ void keyOperations() {
 				exit(0);
 			}
 		}
-		else if (game.gameStage == "gameover") {
+		else if (game.gameStage == "gameover" || game.gameStage == "levelcomplete") {
 			game.gameStage = "title";
 			game.keyStates[' '] = false;
 		}
@@ -888,7 +888,7 @@ void drawGameOverScreen() {
 
 	// button texture
 	glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, game.buttons[1]);
+		glBindTexture(GL_TEXTURE_2D, game.buttons[2]);
 		glBegin(GL_QUADS);
 		glTexCoord2d(0.0, 1.0);
 		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
@@ -928,27 +928,47 @@ void drawLevelCompleteScreen() {
 
 	glDisable(GL_TEXTURE_2D);
 
-	// draw start button
+	// draw main menu button
+	const int mainMenuButtonPosX = 375;
+	const int mainMenuButtonPosY = 200;
+	const int buttonSize = 150;
+
+	// glow effect
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[(int)game.cloudGlowSpriteFrame]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
 
-	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
-		glTexCoord2d(0.0, 1.0);
-		glVertex2f(400.0f, 200.0f);	// bl
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
 
-		glTexCoord2d(1.0, 1.0);
-		glVertex2f(500.0f, 200.0f);	// br
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
 
-		glTexCoord2d(1.0, 0.0);
-		glVertex2f(500.0f, 235.0f);	// tr
-
-		glTexCoord2d(0.0, 0.0);
-		glVertex2f(400.0f, 235.0f); // tl
-
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
 	glEnd();
-
 	glDisable(GL_TEXTURE_2D);
 
+	// button texture
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttons[2]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	
 }
 
 void processTitleScreenInput() {
@@ -967,9 +987,7 @@ void processGameOverScreenInput() {
 }
 
 void processLevelCompleteScreenInput() {
-
-
-
+	
 }
 
 void doTitleScreen() {
@@ -997,17 +1015,11 @@ void doGameOverScreen() {
 
 	// draw background
 	drawGameOverScreen();
-
-	// process inputs for buttons
-	processGameOverScreenInput();
 }
 
 void doLevelCompleteScreen() {
 	// draw background
 	drawLevelCompleteScreen();
-
-	// process inputs for buttons
-	processLevelCompleteScreenInput();
 }
 
 void doGameLevel() {
