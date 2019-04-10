@@ -377,7 +377,14 @@ void Entity::updatePosition() {
 	
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
-	newPosY = posY + (velY * game->deltaTime);  
+	newPosY = posY + (velY * game->deltaTime);
+
+	// update playing facing position (does not matter if blocked)
+	if (velX > 0)
+		facing = 'r';
+
+	if (velX < 0)
+		facing = 'l';
 
 	// perform collision detection if player is alive
 	if (alive) {
@@ -434,16 +441,28 @@ void Entity::draw() {
 
 	// draw and texture the entity
 	glBegin(GL_QUADS);
-		glTexCoord2d(0.0, 1.0);
+		if(facing == 'r')
+			glTexCoord2d(0.0, 1.0);
+		else
+			glTexCoord2d(1.0, 1.0);
 		glVertex2f(posX, posY);
 
-		glTexCoord2d(1.0, 1.0);
+		if(facing == 'r')
+			glTexCoord2d(1.0, 1.0);
+		else
+			glTexCoord2d(0.0, 1.0);
 		glVertex2f(posX + game->tileWidth, posY);
 
-		glTexCoord2d(1.0, 0.0);
+		if (facing == 'r')
+			glTexCoord2d(1.0, 0.0);
+		else
+			glTexCoord2d(0.0, 0.0);
 		glVertex2f(posX + game->tileWidth, posY + game->tileHeight);
 
-		glTexCoord2d(0.0, 0.0);
+		if (facing == 'r')
+			glTexCoord2d(0.0, 0.0);
+		else
+			glTexCoord2d(1.0, 0.0);
 		glVertex2f(posX, posY + game->tileHeight);
 	glEnd();
 	
@@ -581,6 +600,13 @@ void Enemy::updatePosition() {
 	newPosX = posX + (velX * game->deltaTime);
 	newPosY = posY + (velY * game->deltaTime);
 
+	// update enemy facing position (does not matter if blocked)
+	if (velX > 0)
+		facing = 'r';
+
+	if (velX < 0)
+		facing = 'l';
+
 	// check for collision with tilemap in x axis
 	if (!isCollidingX())
 		posX = newPosX;
@@ -611,18 +637,30 @@ void Enemy::draw() {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)spriteFrame]);
 
+	// draw and texture the entity
 	glBegin(GL_QUADS);
-
-	glTexCoord2d(0.0, 1.0);
+	if (facing == 'r')
+		glTexCoord2d(0.0, 1.0);
+	else
+		glTexCoord2d(1.0, 1.0);
 	glVertex2f(posX, posY);
 
-	glTexCoord2d(1.0, 1.0);
+	if (facing == 'r')
+		glTexCoord2d(1.0, 1.0);
+	else
+		glTexCoord2d(0.0, 1.0);
 	glVertex2f(posX + game->tileWidth, posY);
 
-	glTexCoord2d(1.0, 0.0);
+	if (facing == 'r')
+		glTexCoord2d(1.0, 0.0);
+	else
+		glTexCoord2d(0.0, 0.0);
 	glVertex2f(posX + game->tileWidth, posY + game->tileHeight);
 
-	glTexCoord2d(0.0, 0.0);
+	if (facing == 'r')
+		glTexCoord2d(0.0, 0.0);
+	else
+		glTexCoord2d(1.0, 0.0);
 	glVertex2f(posX, posY + game->tileHeight);
 	glEnd();
 

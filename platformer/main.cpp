@@ -68,15 +68,43 @@ int loadTextures()
 
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/0.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/sprites/player/run/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/sprites/player/run/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
-		"textures/sprites/1/2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+		"textures/sprites/player/run/tile002.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile004.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile005.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile006.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile007.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile008.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run/tile009.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
@@ -262,17 +290,12 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			
-	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	
-	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[2]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// set texture parameters for player running sprite
+	for (int i = 0; i < game.playerSpriteRunning.size(); i++) {
+		glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
