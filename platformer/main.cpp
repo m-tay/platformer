@@ -61,6 +61,10 @@ int loadTextures()
 	game.bgTexture.push_back(SOIL_load_OGL_texture
 	(
 		"textures/bg/levelcompletebg.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+	
+	game.bgTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/bg/theend.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
@@ -85,6 +89,10 @@ int loadTextures()
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
 		"textures/buttons/Cloud_mainmenu.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.buttons.push_back(SOIL_load_OGL_texture
+	(
+		"textures/buttons/Cloud_nextlevel.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.buttonGlow.push_back(SOIL_load_OGL_texture
 	(
@@ -250,6 +258,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[3]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -271,6 +283,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, game.buttons[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.buttons[3]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -593,6 +609,134 @@ void initLevel1() {
 	game.gemCollected = false;
 }
 
+void initLevel2() {
+	// levelMap encodes each tile as a character in a string
+	// key: - : empty space
+	//      # : ground tile
+	//		D : dirt tile (like ground tile but nothing on top)
+	//		1 : collectable (value 1)
+	//		G : gem (value 10) - level objective
+	//		d : door - exits level when gem collected
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D------------------------1--------1-------------1-1-1----------D";
+	game.levelMap += "D----------------------#####----#####----------#######---------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D----------------------------------------------------------1-1-D";
+	game.levelMap += "D---------------------------------------------------------#####D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D----------------------------------------G----------1----------D";
+	game.levelMap += "D------------------------------------#########-----###-------1-D";
+	game.levelMap += "D-----------------------------------------------------------###D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D---------------------------------1----------------------------D";
+	game.levelMap += "D--------------------------------###--------1------------------D";
+	game.levelMap += "D------------------------------------------###-----------------D";
+	game.levelMap += "D---------------------------------------------------1--------1-D";
+	game.levelMap += "D-------------------------------------1-1----------###------###D";
+	game.levelMap += "D---------------#####----------------#####---------------------D";
+	game.levelMap += "D---------------DDDDD--------d-------DDDDD---------------------D";
+	game.levelMap += "###############################################################D";
+
+	// reverses level map string so it is rendered the right way round
+	reverse(game.levelMap.begin(), game.levelMap.end());
+
+	// sets positions of entities
+	playerEntity.posX = 32.0f;
+	playerEntity.posY = 32.0f;
+	enemy1.posX = 1200.0f;
+	enemy1.posY = 32.0f;
+	enemy2.posX = 600.0f;
+	enemy2.posY = 32.0f;
+	platform1.posX = 632.0f;
+	platform1.posY = 512.0f;
+
+	// set player status to be alive (in case of restarting level)
+	playerEntity.alive = true;
+
+	// set player score to 0
+	game.playerScore = 0;
+
+	// set the gem as uncollected
+	game.gemCollected = false;
+}
+
+void initLevel3() {
+	// levelMap encodes each tile as a character in a string
+	// key: - : empty space
+	//      # : ground tile
+	//		D : dirt tile (like ground tile but nothing on top)
+	//		1 : collectable (value 1)
+	//		G : gem (value 10) - level objective
+	//		d : door - exits level when gem collected
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D------------------------G-------------------------------------D";
+	game.levelMap += "D-------------1--------#####-----------------------------------D";
+	game.levelMap += "D-----------#########------------------------------------------D";
+	game.levelMap += "D----------#---------------------------------------------------D";
+	game.levelMap += "D-----1--------------------------------------------------------D";
+	game.levelMap += "D---#####------------------------------------------------------D";
+	game.levelMap += "D---------#---1------------------------------------------------D";
+	game.levelMap += "D-----------#####----------------------------------------------D";
+	game.levelMap += "D-----------------#----1---------------------------------------D";
+	game.levelMap += "D--------------------#####-------------------------------------D";
+	game.levelMap += "D-------------------------#------------------------------------D";
+	game.levelMap += "D--------------------------#----1------------------------------D";
+	game.levelMap += "D-----------------------------#####----------------------------D";
+	game.levelMap += "D-------------------------------------##----1------------------D";
+	game.levelMap += "D-----------------d-----------------------#####----------------D";
+	game.levelMap += "D---------------#####------------------------------------------D";
+	game.levelMap += "D--1-1-1--------DDDDD------------------------------------d-----D";
+	game.levelMap += "###############################################################D";
+
+	// reverses level map string so it is rendered the right way round
+	reverse(game.levelMap.begin(), game.levelMap.end());
+
+	// sets positions of entities
+	playerEntity.posX = 32.0f;
+	playerEntity.posY = 32.0f;
+	enemy1.posX = 1200.0f;
+	enemy1.posY = 32.0f;
+	enemy2.posX = 600.0f;
+	enemy2.posY = 32.0f;
+	platform1.posX = 632.0f;
+	platform1.posY = 512.0f;
+
+	// set player status to be alive (in case of restarting level)
+	playerEntity.alive = true;
+
+	// set player score to 0
+	game.playerScore = 0;
+
+	// set the gem as uncollected
+	game.gemCollected = false;
+}
+
 // resizes opengl windows
 void reshape(int width, int height)	{
 	game.screenWidth = width; game.screenHeight = height;	// to ensure the mouse coordinates match 
@@ -672,13 +816,31 @@ void keyOperations() {
 		if(game.gameStage == "title") {
 			if(game.menuScreenButton == 0) {
 				initLevel1();
-				game.gameStage = "level1";
+				game.gameStage = "level";
 			}
 			if(game.menuScreenButton == 1) {
 				exit(0);
 			}
 		}
-		else if (game.gameStage == "gameover" || game.gameStage == "levelcomplete") {
+		else if (game.gameStage == "gameover") {
+			game.gameStage = "title";
+			game.keyStates[' '] = false;
+		}
+		else if(game.gameStage == "levelcomplete") {
+			// increment level counter
+			game.onLevel++;
+
+			// initialise next level
+			switch (game.onLevel) {
+			case 2: initLevel2(); break;
+			case 3: initLevel3(); break;
+			}
+			
+			// set gameStage back to level so next level loads
+			game.gameStage = "level";
+			game.keyStates[' '] = false;
+		}
+		else if(game.gameStage == "theend") {
 			game.gameStage = "title";
 			game.keyStates[' '] = false;
 		}
@@ -905,8 +1067,6 @@ void drawGameOverScreen() {
 		glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
 		glEnd();
 	glDisable(GL_TEXTURE_2D);
-
-
 }
 
 void drawLevelCompleteScreen() {
@@ -955,6 +1115,71 @@ void drawLevelCompleteScreen() {
 
 	// button texture
 	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttons[3]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void drawTheEndScreen() {
+	// draw background
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.bgTexture[3]);
+
+	glBegin(GL_QUADS); 	// draw from bottom left, clockwise
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(1.0, 1.0);	// bl
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(0, game.screenHeight);	// tl
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(game.screenWidth, game.screenHeight);	// tr
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(game.screenWidth, 0);	// br
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+	// draw buttons
+	const int buttonSize = 150;
+
+	// draw main menu button
+	const int mainMenuButtonPosX = 375;
+	const int mainMenuButtonPosY = 200;
+
+	// glow effect
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.buttonGlow[(int)game.cloudGlowSpriteFrame]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(mainMenuButtonPosX + buttonSize, mainMenuButtonPosY + buttonSize);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	// button texture
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, game.buttons[2]);
 	glBegin(GL_QUADS);
 	glTexCoord2d(0.0, 1.0);
@@ -970,7 +1195,6 @@ void drawLevelCompleteScreen() {
 	glVertex2f(mainMenuButtonPosX, mainMenuButtonPosY + buttonSize); // tl
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-	
 }
 
 void processTitleScreenInput() {
@@ -980,8 +1204,6 @@ void processTitleScreenInput() {
 
 	if (game.menuScreenButton < 0)
 		game.menuScreenButton = 1;
-
-
 }
 
 void processGameOverScreenInput() {
@@ -1022,6 +1244,11 @@ void doGameOverScreen() {
 void doLevelCompleteScreen() {
 	// draw background
 	drawLevelCompleteScreen();
+}
+
+void doTheEndScreen() {
+	// draw background
+	drawTheEndScreen();
 }
 
 void doGameLevel() {
@@ -1072,14 +1299,16 @@ void display()
 	// game drawing logic
 	if(game.gameStage == "title")
 		doTitleScreen();
-	if(game.gameStage == "level1")
+	if(game.gameStage == "level")
 		doGameLevel();
 	if (game.gameStage == "gameover")
 		doGameOverScreen();
 	if (game.gameStage == "levelcomplete")
 		doLevelCompleteScreen();
+	if (game.gameStage == "theend")
+		doTheEndScreen();
 
-	//glPopMatrix();
+	// flush and swap buffers to draw to screen
 	glFlush();
 	glutSwapBuffers();
 }

@@ -216,8 +216,14 @@ void Entity::checkSpecialTiles() {
 	// if gem is collected, check for level exit collision
 	if (game->gemCollected) {
 
+		// check tile collision with door
 		if (tileTL == 'd' || tileTR == 'd' || tileBL == 'd' || tileBR == 'd') {
-			game->gameStage = "levelcomplete";
+
+			// check if player is on final level
+			if (game->onLevel == game->maxLevels)
+				game->gameStage = "theend";
+			else 
+				game->gameStage = "levelcomplete";
 		}
 	}
 }

@@ -26,7 +26,7 @@ public:
 	float playerJumpRate = 0.7f;	// param for player jump rate
 	float playerDecelRate = 0.2f;
 	float gravityRate = 0.004f;		// the rate gravity works at
-									// pre-calculations
+	int maxLevels = 3;
 
 	// pre-computes
 	int levelActualWidth = levelWidth * tileWidth;
@@ -51,6 +51,7 @@ public:
 	float camY = 0.0f;
 	
 	// game variables
+	int onLevel = 1;	// tracks what level the player is on
 	string levelMap;	// stores level tilemap
 	int playerScore = 0;
 	std::string gameStage = "title";	// stores what part of the game is running
