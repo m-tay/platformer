@@ -27,12 +27,12 @@ MovingPlatform platform1(game, 96.0f, 96.0f);	// moving platform
 
 
 // opengl function prototypes
-void display();				//called in winmain to draw everything to the screen
-void reshape(int width, int height);				//called when the window is resized
-void init();				//called in winmain when the program starts.
-void keyOperations();
-void keySpecialOperations();
-void update();				//called in winmain to update variables
+void display();							//called in winmain to draw everything to the screen
+void reshape(int width, int height);	//called when the window is resized
+void init();							//called in winmain when the program starts
+void keyOperations();					// handles key presses
+void keySpecialOperations();			// handles special key presses
+void update();							//called in winmain to update variables
 
 // game function prototypes
 void drawLevel();
@@ -105,6 +105,54 @@ int loadTextures()
 	game.playerSpriteRunning.push_back(SOIL_load_OGL_texture
 	(
 		"textures/sprites/player/run/tile009.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile002.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile004.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile005.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile006.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile007.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile008.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteRunShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/run-shoot/tile009.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteStillShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/shoot/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteStillShooting.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/shoot/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
@@ -258,6 +306,10 @@ int loadTextures()
 	(
 		"textures/tiles/DoorOpen.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.bulletSprite.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/bullet.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	// check for errors
 	if (game.tileTextures.at(0) == 0) {
 		cout << "Error loading textures" << endl;
@@ -268,7 +320,7 @@ int loadTextures()
 		cout << "Error loading textures" << endl;
 		exit(0);
 	}
-
+	
 	// bind and generate texture
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -293,6 +345,20 @@ int loadTextures()
 	// set texture parameters for player running sprite
 	for (int i = 0; i < game.playerSpriteRunning.size(); i++) {
 		glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunning[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+	// set texture parameters for player running and shooting sprite
+	for(int i = 0; i < game.playerSpriteRunShooting.size(); i++) {
+		glBindTexture(GL_TEXTURE_2D, game.playerSpriteRunShooting[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+	// set texture parameters for player shooting while still sprite
+	for (int i = 0; i < game.playerSpriteStillShooting.size(); i++) {
+		glBindTexture(GL_TEXTURE_2D, game.playerSpriteStillShooting[i]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
@@ -445,6 +511,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, game.bulletSprite[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	// error checking
 	GLenum errorCode = glGetError();
 	if (errorCode != GL_NO_ERROR) {
@@ -459,7 +529,7 @@ int loadTextures()
 	playerEntity.spriteSet.push_back(game.playerSpriteRunning);
 	enemy1.spriteSet.push_back(game.enemy1Texture);
 	enemy2.spriteSet.push_back(game.enemy1Texture);
-
+	
 	return true;
 }
 
@@ -625,6 +695,12 @@ void initLevel1() {
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
 
+	// set enemies to be alive
+	enemy1.alive = true;
+	enemy2.alive = true;
+	game.enemies.push_back(&enemy1);
+	game.enemies.push_back(&enemy2);
+
 	// set player score to 0
 	game.playerScore = 0;
 
@@ -688,6 +764,13 @@ void initLevel2() {
 
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
+
+	// set enemies to be alive, add back to enemy list
+	enemy1.alive = true;
+	enemy2.alive = true;
+	game.enemies.push_back(&enemy1);
+	game.enemies.push_back(&enemy2);
+
 
 	// set player score to 0
 	game.playerScore = 0;
@@ -753,6 +836,12 @@ void initLevel3() {
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
 
+	// set enemies to be alive
+	enemy1.alive = true;
+	enemy2.alive = true;
+	game.enemies.push_back(&enemy1);
+	game.enemies.push_back(&enemy2);
+
 	// set player score to 0
 	game.playerScore = 0;
 
@@ -781,8 +870,6 @@ void init() {
 
 	// add entities to vector
 	game.movingPlatforms.push_back(&platform1);
-	game.enemies.push_back(&enemy1);
-	game.enemies.push_back(&enemy2);
 }
 
 // processes key presses
@@ -821,7 +908,7 @@ void keyOperations() {
 		}
 	}
 
-	// only allow x-axis movement when player is alive
+	// only allow x-axis movement when player is alive	
 	if (playerEntity.alive) {
 		if (game.keyStates['a'])
 			playerEntity.velX = -game.playerAccelRate;
@@ -840,6 +927,7 @@ void keyOperations() {
 			if(game.menuScreenButton == 0) {
 				initLevel1();
 				game.gameStage = "level";
+				game.canShoot = false;	// set shooting to be false when level starts, to provide buffer from input used to start level
 			}
 			if(game.menuScreenButton == 1) {
 				exit(0);
@@ -862,12 +950,24 @@ void keyOperations() {
 			// set gameStage back to level so next level loads
 			game.gameStage = "level";
 			game.keyStates[' '] = false;
+			game.canShoot = false;
 		}
 		else if(game.gameStage == "theend") {
 			game.gameStage = "title";
 			game.keyStates[' '] = false;
 		}
+		// spacebar pressed when game is running = do some shooting
+		else if(game.gameStage == "level") {
 
+			if (game.canShoot) {
+				game.canShoot = false;
+				// create new bullet projectile entity at players position
+				Projectile bullet(game, playerEntity.posX, playerEntity.posY, playerEntity.facing);
+
+				// add bullet to list of projectiles
+				game.projectiles.push_back(bullet);
+			}
+		}
 	}	
 }
 
@@ -1291,7 +1391,30 @@ void doGameLevel() {
 	// draw all enemy objects
 	for(int i = 0; i < game.enemies.size(); i++) {
 		game.enemies.at(i)->spriteFrame += 0.01f;	// update animation frame
-		game.enemies.at(i)->draw();					// draw enemy
+
+		// if enemy is alive, draw it
+		if (game.enemies.at(i)->alive) {
+			game.enemies.at(i)->draw();					// draw enemy
+		}
+		// if enemy is dead, remove it 
+		else {
+			game.enemies.erase(game.enemies.begin() + i);
+		}
+
+
+	}
+
+	// draw all bullets
+	for(int i = 0; i < game.projectiles.size(); i++) {
+
+		// if bullet is active, draw it
+		if (game.projectiles.at(i).active) {
+			game.projectiles.at(i).draw();
+		}
+		// if bullet is inactive, remove it
+		else {
+			game.projectiles.erase(game.projectiles.begin()+i);
+		}
 	}
 }
 
@@ -1322,7 +1445,7 @@ void display()
 	// game drawing logic
 	if(game.gameStage == "title")
 		doTitleScreen();
-	if(game.gameStage == "level")
+	if (game.gameStage == "level")
 		doGameLevel();
 	if (game.gameStage == "gameover")
 		doGameOverScreen();
@@ -1336,12 +1459,12 @@ void display()
 	glutSwapBuffers();
 }
 
-// 5ms timer
+// 50ms timer
 void timer(int t) {
+	game.canShoot = true;
 
-
-	// run timer in 5ms
-	glutTimerFunc(5, timer, 0);
+	// run timer in 250ms
+	glutTimerFunc(250, timer, 0);
 }
 
 int main(int argc, char **argv) {

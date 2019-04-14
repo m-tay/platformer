@@ -588,6 +588,46 @@ bool Enemy::isCollidingY() {
 	return false;
 }
 
+// check for collisions with enemies - uses circle to circle collision detection for performance
+// purposes, there are lots of collisions to make. This will just be used for tile-sized enemies, 
+// as bounding circles are excellent approximations for the sprites used
+bool Enemy::isCollidingWithProjectile() {
+
+	// offset x,y pos by half tile widths to calc bounding circle
+	float entityX = posX + game->halfTileW;
+	float entityY = posY + game->halfTileH;
+
+	// for each enemy
+	for (int i = 0; i < game->projectiles.size(); i++) {
+
+		// offset x,y pos by half tile widths to calc bounding circle
+		float enemyX = game->projectiles.at(i).posX + game->halfTileW;
+		float enemyY = game->projectiles.at(i).posY + game->halfTileH;
+
+		// debug mode - draw collision detection distance
+		if (game->debug) {
+			glBegin(GL_LINES);
+			glVertex2f(entityX, entityY);
+			glVertex2f(enemyX, enemyY);
+			glEnd();
+		}
+
+		// calculate distance between circles
+		float distX = entityX - enemyX;
+		float distY = entityY - enemyY;
+		float dist = sqrt((distX * distX) + (distY * distY));
+
+		// collision detection - check if distance between circles is less than sum of radius (tile width)
+		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+			velY = 1.5f;				// add a big jump before falling off screen dead
+			return true;				// collision detected
+		}
+	}
+
+	// if no collisions detected for any enemy, return false
+	return false;
+}
+
 // update entity position based on velocity
 void Enemy::updatePosition() {
 	// add velocity to enemy
@@ -630,6 +670,11 @@ void Enemy::updatePosition() {
 void Enemy::draw() {
 
 	updatePosition();
+
+	// check if being hit by bullet
+	if(isCollidingWithProjectile()) {
+		alive = false;	// set alive status to false
+	}
 
 	if (spriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
 		spriteFrame = 0;
@@ -706,3 +751,184 @@ void Enemy::draw() {
 	}
 }
 
+// constructor
+Projectile::Projectile(Game& gameObj, float x, float y, char dir) {
+	posX = x;
+	posY = y;
+	game = &gameObj;
+	direction = dir;
+	spriteSet.push_back(game->bulletSprite);
+	velX = 0;
+	velY = 0;
+}
+
+// calculates the cartesian coords of surrounding tiles
+void Projectile::calculateSurroundingTiles() {
+	tileLeft = (int)posX / game->tileWidth;
+	tileRight = (int)(posX / game->tileWidth) + 1;
+	tileTop = (int)(posY / game->tileHeight) + 1;
+	tileBottom = (int)posY / game->tileHeight;
+}
+
+// check for collisions with tilemap on x axis
+bool Projectile::isCollidingX() {
+	// calculate x,y coords of surrounding tiles
+	// assumes entities are no bigger than 1 standard tile width
+	tileLeft = (int)newPosX / game->tileWidth;
+	tileRight = (int)(newPosX / game->tileWidth) + 1;
+	tileTop = (int)(posY / game->tileHeight) + 1;
+	tileBottom = (int)posY / game->tileHeight;
+
+	// get the actual tile values from tilemap
+	char tileTL = game->getTile(game, tileLeft, tileTop);
+	char tileTR = game->getTile(game, tileRight, tileTop);
+	char tileBL = game->getTile(game, tileLeft, tileBottom);
+	char tileBR = game->getTile(game, tileRight, tileBottom);
+
+	// if any collisions detected, return true
+	if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
+		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D')
+		return true;
+
+	// if not colliding, return false
+	return false;
+}
+
+
+// check for collisions with enemies - uses circle to circle collision detection for performance
+// purposes, there are lots of collisions to make. This will just be used for tile-sized enemies, 
+// as bounding circles are excellent approximations for the sprites used
+bool Projectile::isCollidingWithEnemies() {
+
+	// offset x,y pos by half tile widths to calc bounding circle
+	float entityX = posX + game->halfTileW;
+	float entityY = posY + game->halfTileH;
+
+	// for each enemy
+	for (int i = 0; i < game->enemies.size(); i++) {
+
+		// offset x,y pos by half tile widths to calc bounding circle
+		float enemyX = game->enemies.at(i)->posX + game->halfTileW;
+		float enemyY = game->enemies.at(i)->posY + game->halfTileH;
+
+		// debug mode - draw collision detection distance
+		if (game->debug) {
+			glBegin(GL_LINES);
+			glVertex2f(entityX, entityY);
+			glVertex2f(enemyX, enemyY);
+			glEnd();
+		}
+
+		// calculate distance between circles
+		float distX = entityX - enemyX;
+		float distY = entityY - enemyY;
+		float dist = sqrt((distX * distX) + (distY * distY));
+
+		// collision detection - check if distance between circles is less than sum of radius (tile width)
+		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+			velY = 1.5f;				// add a big jump before falling off screen dead
+			return true;				// collision detected
+		}
+	}
+
+	// if no collisions detected for any enemy, return false
+	return false;
+}
+
+
+// update entity position based on velocity
+void Projectile::updatePosition() {
+
+	// calculate proposed new position
+	newPosX = posX + (velX * game->deltaTime);
+	newPosY = posY + (velY * game->deltaTime);
+
+	posX = newPosX;
+	posY = newPosY;
+
+	// check for collision with tilemap in x axis
+	if (isCollidingX())
+		active = false; // set to inactive, so it can be destroyed
+
+
+	// check for collisions with enemies
+	if (isCollidingWithEnemies()) {
+		active = false; 
+	}
+
+	// deceleration on x axis
+	velX = 0;
+}
+
+// draws the entity
+void Projectile::draw() {
+	if (active) {
+		if (direction == 'r')
+			velX = 0.65f;
+		if (direction == 'l')
+			velX = -0.655f;
+
+		// updates the entity position, including collision detection
+		updatePosition();
+
+		// enable textures and bind the texture from [0] in spriteSet (running texture)
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, spriteSet[0][0]);
+
+		// draw and texture the entity
+		glBegin(GL_QUADS);
+		glTexCoord2d(1.0, 1.0);
+		glVertex2f(posX, posY);
+
+		glTexCoord2d(0.0, 1.0);
+		glVertex2f(posX + game->tileWidth, posY);
+
+		glTexCoord2d(0.0, 0.0);
+		glVertex2f(posX + game->tileWidth, posY + game->tileHeight);
+
+		glTexCoord2d(1.0, 0.0);
+		glVertex2f(posX, posY + game->tileHeight);
+		glEnd();
+
+		glDisable(GL_TEXTURE_2D);
+
+		// debug mode - draw surrounding tiles
+		if (game->debug) {
+			calculateSurroundingTiles();	// calculates surrounding tiles
+
+			// draw tile mapping 
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileRight * game->tileWidth, tileBottom * game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileRight * game->tileWidth, tileTop * game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileTop * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileLeft * game->tileWidth, tileTop * game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileTop * game->tileHeight);
+			glEnd();
+
+			// draw collision circle
+			// shift x,y by half a tile, because entity position is stored from bottom left
+			game->drawCircle(posX + game->halfTileW, posY + game->halfTileW, game->halfTileW);
+
+		}
+	}
+}

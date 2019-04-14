@@ -69,7 +69,6 @@ public:
 	int tileLeft, tileRight, tileTop, tileBottom;
 
 	// spriteSet holds all a vector of GLuint arrays to store all the textures
-	// vector[0] - walking animation	
 	vector<vector<GLuint> >spriteSet;
 
 	// calculates the cartesian coords of surrounding tiles
@@ -98,9 +97,6 @@ public:
 
 	// draws the entity
 	void draw();
-
-	// starts the entity's death animation
-	void deathAnimation();
 };
 
 // class for character entities
@@ -144,6 +140,53 @@ public:
 
 	// check for collisions with tilemap on y axis
 	bool isCollidingY();
+
+	// checks if hit by bullet
+	bool isCollidingWithProjectile();
+
+	// update entity position based on velocity
+	void updatePosition();
+
+	// draws the entity
+	void draw();
+};
+
+// class for projectiles
+class Projectile {
+public:
+
+	// constructor
+	Projectile(Game& gameObj, float x, float y, char dir);
+
+	Game *game;
+	float posX;	// position
+	float posY;
+	float velX = 0.0f;	// velocity
+	float velY = 0.0f;
+	float newPosX;
+	float newPosY;
+	char tileTL;	// holds the 4 tiles around the entity
+	char tileTR;
+	char tileBL;
+	char tileBR;
+	float bulletSpriteFrame = 0.0f; // tracks the playerSpriteFrame for animating the sprite
+	char direction;
+	bool active = true;
+
+   // holds tile coords surrounding entity (x,y)
+	int tileLeft, tileRight, tileTop, tileBottom;
+
+	// spriteSet holds all a vector of GLuint arrays to store all the textures
+	vector<vector<GLuint> >spriteSet;
+
+	// calculates the cartesian coords of surrounding tiles
+	void calculateSurroundingTiles();
+
+	// check for collisions with tilemap on x axis
+	bool isCollidingX();
+
+	// check for collisions with enemies
+	bool isCollidingWithEnemies();
 
 	// update entity position based on velocity
 	void updatePosition();

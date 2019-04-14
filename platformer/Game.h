@@ -3,13 +3,13 @@
 #include "freeglut.h"
 #include <vector>
 
-
 using namespace std;
 
 // forward declares
 class MovingPlatform;	
 class Entity;
 class Enemy;
+class Projectile;
 
 class Game {
 public:
@@ -37,7 +37,7 @@ public:
 	// deltatime variables
 	int oldTimeSinceStart;	// used to calculate deltatime
 	int deltaTime;			// used to store deltatime
-
+	
 	// key and mouse processing
 	bool* keyStates = new bool[256]();
 	bool* keySpecialStates = new bool[256]();
@@ -45,6 +45,7 @@ public:
 	bool leftPressed = false;
 	int mouseX;
 	int mouseY;
+	bool canShoot = true;
 
 	// camera position
 	float camX = 0.0f;
@@ -60,7 +61,10 @@ public:
 	// textures
 	vector<GLuint> tileTextures;		// stores level tile textures
 	vector<GLuint> bgTexture;			// stores background textures
-	vector<GLuint> playerSpriteRunning;	// stores player sprite
+	vector<GLuint> playerSpriteRunning;	// stores player sprite running
+	vector<GLuint> playerSpriteStillShooting;
+	vector<GLuint> playerSpriteRunShooting;
+	vector<GLuint> bulletSprite;
 	vector<GLuint> coinSprite;			// stores spinning coin sprite
 	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy
 	vector<GLuint> buttons;				// stores button textures
@@ -80,8 +84,9 @@ public:
 	// vectors to store game objects
 	vector<MovingPlatform*> movingPlatforms;
 	vector<Enemy*> enemies;
+	vector<Projectile> projectiles;	// keeps track of all bullets 
 
-	// stores selected position on menuscreen
+	// stores selected position on menu screen
 	int menuScreenButton = 0;
 
 	// utility methods for running the game
