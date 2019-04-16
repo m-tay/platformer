@@ -846,14 +846,15 @@ void Projectile::updatePosition() {
 	posX = newPosX;
 	posY = newPosY;
 
-	// check for collision with tilemap in x axis
+	// check for collision with tilemap in x axis (hitting a wall)
 	if (isCollidingX())
-		active = false; // set to inactive, so it can be destroyed
+		active = false; // set to inactive, so it can be destroyed in main thread
 
 
 	// check for collisions with enemies
 	if (isCollidingWithEnemies()) {
-		active = false; 
+		game->playerScore += 3;	// increase score for killing enemy
+		active = false;			// set to inactive, so it can be destroyed in main thread
 	}
 
 	// deceleration on x axis

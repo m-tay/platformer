@@ -41,6 +41,10 @@ void drawLevel();
 int loadTextures()
 {
 	// loads image directly as texture
+	game.titleIcons.push_back(SOIL_load_OGL_texture
+	(
+		"textures/bg/title.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
 		"textures/tiles/GrassCliffMid.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
@@ -322,6 +326,10 @@ int loadTextures()
 	}
 	
 	// bind and generate texture
+	glBindTexture(GL_TEXTURE_2D, game.titleIcons[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
+
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -1042,7 +1050,7 @@ void drawTitleScreen() {
 
 	// draw start button
 	const int startButtonPosX = 150;
-	const int startButtonPosY = 250;
+	const int startButtonPosY = 180;
 
 
 	// glow effect
@@ -1085,7 +1093,7 @@ void drawTitleScreen() {
 
 	// draw quit button
 	const int quitButtonPosX = 150;
-	const int quitButtonPosY = 100;
+	const int quitButtonPosY = 30;
 
 	// glow effect
 	if (game.menuScreenButton == 1) {
@@ -1122,6 +1130,29 @@ void drawTitleScreen() {
 
 	glTexCoord2d(0.0, 0.0);
 	glVertex2f(quitButtonPosX, quitButtonPosY + buttonSize); // tl
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	// title texture
+	int titleX = 120;
+	int titleY = 349;
+	int titleW = 659;
+	int titleH = 326;
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.titleIcons[0]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(titleX, titleY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(titleX + titleW, titleY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(titleX + titleW, titleY + titleH);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(titleX, titleY + titleH); // tl
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
