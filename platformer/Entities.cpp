@@ -286,10 +286,11 @@ bool Entity::isCollidingY() {
 bool Entity::isCollidingWithMovingPlatform() {
 	// loop through all moving platforms
 	for (int i = 0; i < game->movingPlatforms.size(); i++) {
+		
 		// AABB edge overlap checks
 		if (newPosX + game->tileWidth >= game->movingPlatforms.at(i)->posX								&&
 			newPosX <= game->movingPlatforms.at(i)->posX + game->movingPlatforms.at(i)->platformWidth	&&
-			newPosY + game->tileHeight >= game->movingPlatforms.at(i)->posY							&&
+			newPosY + game->tileHeight >= game->movingPlatforms.at(i)->posY								&&
 			newPosY <= game->movingPlatforms.at(i)->posY + game->tileHeight) {
 
 			// if AABB overlap, check if entity is hitting it from the bottom
@@ -297,7 +298,9 @@ bool Entity::isCollidingWithMovingPlatform() {
 				(newPosX + game->tileHeight) < (game->movingPlatforms.at(i)->posX + game->tileHeight)) {
 				velY = 0;
 			}
-			
+
+			cout << glutGet(GLUT_ELAPSED_TIME) << " : on platform" << endl;
+
 			return true;
 		}
 	}
@@ -312,10 +315,10 @@ void Entity::trackMovingPlatforms() {
 	for (int i = 0; i < game->movingPlatforms.size(); i++) {
 
 		// check if within x axis of moving platform
-		if (posX >= game->movingPlatforms.at(i)->posX && (posX + game->tileWidth) < (game->movingPlatforms.at(i)->posX + game->movingPlatforms.at(i)->platformWidth)) {
+		if ((posX + game->halfTileW) >= game->movingPlatforms.at(i)->posX && (posX + game->halfTileW) < (game->movingPlatforms.at(i)->posX + game->movingPlatforms.at(i)->platformWidth)) {
 
 			// check if close enough to surface of moving platform to track movement
-			if ((game->movingPlatforms.at(i)->posY - posY + 32) > -0.3f && (game->movingPlatforms.at(i)->posY - posY + 32) < 0.3f) {
+			if ((game->movingPlatforms.at(i)->posY - posY + 32) > -0.6f && (game->movingPlatforms.at(i)->posY - posY + 32) < 0.6f) {
 				posX += game->movingPlatforms.at(i)->velX * game->deltaTime;
 				velY = 0;
 				onGround = true;
@@ -374,7 +377,7 @@ bool Entity::isCollidingWithEnemies() {
 
 // update entity position based on velocity
 void Entity::updatePosition() {
-	
+
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
 	newPosY = posY + (velY * game->deltaTime);
@@ -393,11 +396,11 @@ void Entity::updatePosition() {
 		checkSpecialTiles();
 
 		// check for collision with tilemap in x axis
-		if (!isCollidingX() && !isCollidingWithMovingPlatform())
+		if (!isCollidingWithMovingPlatform() && !isCollidingX())
 			posX = newPosX;
 
 		// check for collision in with tilemap y axis
-		if (!isCollidingY() && !isCollidingWithMovingPlatform())
+		if (!isCollidingWithMovingPlatform() && !isCollidingY())
 			posY = newPosY;
 
 		// check for collisions with enemies
