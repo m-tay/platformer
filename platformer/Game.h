@@ -11,6 +11,12 @@ class Entity;
 class Enemy;
 class Projectile;
 
+// struct to hold (x,y) coords
+struct Point {
+	int x;
+	int y;
+};
+
 class Game {
 public:
 	// DEBUG FLAG - set to true to view collision detection drawing 
@@ -25,7 +31,7 @@ public:
 	float playerAccelRate = 0.35f;	// param for player acceleration
 	float playerJumpRate = 0.7f;	// param for player jump rate
 	float playerDecelRate = 0.2f;
-	float gravityRate = 0.004f;		// the rate gravity works at
+	float gravityRate = 0.002f;		// the rate gravity works at
 	int maxLevels = 3;
 
 	// pre-computes

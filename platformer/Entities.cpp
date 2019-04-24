@@ -427,7 +427,7 @@ void Entity::updatePosition() {
 
 	// apply gravity 
 	if (!onGround)
-		velY -= game->gravityRate;
+		velY -= (game->gravityRate * game->deltaTime);
 }
 
 // draws the entity
@@ -635,9 +635,9 @@ bool Enemy::isCollidingWithProjectile() {
 void Enemy::updatePosition() {
 	// add velocity to enemy
 	if (movingPosX)
-		velX = 0.2f;
+		velX = 0.05f;
 	else
-		velX = -0.2f;
+		velX = -0.05f;
 
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
@@ -663,8 +663,8 @@ void Enemy::updatePosition() {
 
 
 	// apply gravity 
-	if (!onGround)
-		velY -= game->gravityRate;
+	//if (!onGround)
+	//	velY -= game->gravityRate;
 
 
 }

@@ -18,13 +18,21 @@ using namespace std;
 Game game;
 
 // create entities
-Entity playerEntity(game, 32.0f, 32.0f);		// player entity
-Enemy enemy1(game, 384.0f, 160.0f);
-Enemy enemy2(game, 600.0f, 32.0f);
+Entity playerEntity(game, 0,0);		// player entity
+Enemy enemy1(game, 0, 0);
+Enemy enemy2(game, 0, 0);
+Enemy enemy3(game, 0, 0);
+Enemy enemy4(game, 0, 0);
+Enemy enemy5(game, 0, 0);
+Enemy enemy6(game, 0, 0);
+Enemy enemy7(game, 0, 0);
+Enemy enemy8(game, 0, 0);
 
 // create moving platform object
-MovingPlatform platform1(game, 96.0f, 96.0f);	// moving platform
-
+MovingPlatform platform1(game, 0, 0);	// moving platform
+MovingPlatform platform2(game, 0, 0);	// moving platform
+MovingPlatform platform3(game, 0, 0);	// moving platform
+MovingPlatform platform4(game, 0, 0);	// moving platform
 
 // opengl function prototypes
 void display();							//called in winmain to draw everything to the screen
@@ -44,6 +52,10 @@ int loadTextures()
 	game.titleIcons.push_back(SOIL_load_OGL_texture
 	(
 		"textures/bg/title.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.titleIcons.push_back(SOIL_load_OGL_texture
+	(
+		"textures/bg/objctrl.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
@@ -330,6 +342,10 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, game.titleIcons[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
+
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -537,7 +553,13 @@ int loadTextures()
 	playerEntity.spriteSet.push_back(game.playerSpriteRunning);
 	enemy1.spriteSet.push_back(game.enemy1Texture);
 	enemy2.spriteSet.push_back(game.enemy1Texture);
-	
+	enemy3.spriteSet.push_back(game.enemy1Texture);
+	enemy4.spriteSet.push_back(game.enemy1Texture);
+	enemy5.spriteSet.push_back(game.enemy1Texture);
+	enemy6.spriteSet.push_back(game.enemy1Texture);
+	enemy7.spriteSet.push_back(game.enemy1Texture);
+	enemy8.spriteSet.push_back(game.enemy1Texture);
+		
 	return true;
 }
 
@@ -658,26 +680,26 @@ void initLevel1() {
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D-1-1-1-1-1----------------------------------------------------D";
+	game.levelMap += "D-----------####-----------------------------------------------D";
+	game.levelMap += "D-------------------####---------------------------------------D";
+	game.levelMap += "D-------------------------------------###----------------######D";
+	game.levelMap += "D-------------------------------###----------------------------D";
+	game.levelMap += "D------------------------###-----------------------------------D";
+	game.levelMap += "D---------------####-------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D-----######---------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D------------------------1--------1-------------1-1-1----------D";
-	game.levelMap += "D----------------------#####----#####----------#######---------D";
+	game.levelMap += "D#########-------------#####----#####----------#######---------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D----------------------------------------------------------1-1-D";
 	game.levelMap += "D---------------------------------------------------------#####D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D--------####--------------------------------------------------D";
 	game.levelMap += "D----------------------------------------G----------1----------D";
-	game.levelMap += "D------------------------------------#########-----###-------1-D";
+	game.levelMap += "D----------------#####---------------#########-----###-------1-D";
 	game.levelMap += "D-----------------------------------------------------------###D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D----------###-------------------------------------------------D";
 	game.levelMap += "D-----1--------------------------------------------------1-----D";
 	game.levelMap += "D---#####-----------------------------------------------###----D";
 	game.levelMap += "D------------------------------------------------------#DDD----D";
@@ -695,19 +717,46 @@ void initLevel1() {
 	playerEntity.posY = 32.0f;	
 	enemy1.posX = 1200.0f;
 	enemy1.posY = 32.0f;
-	enemy2.posX = 600.0f;
-	enemy2.posY = 32.0f;
+	enemy2.posX = 736.0f;
+	enemy2.posY = 448.0f;
+	enemy3.posX = 1000.0f;
+	enemy3.posY = 448.0f;
+	enemy4.posX = 600.0f;
+	enemy4.posY = 160.0f;
+	enemy5.posX = 1300.0f;
+	enemy5.posY = 256.0f;
+	enemy6.posX = 600.0f;
+	enemy6.posY = 3000.0f;
+	enemy7.posX = 600.0f;
+	enemy7.posY = 3000.0f;
+	enemy8.posX = 600.0f;
+	enemy8.posY = 3000.0f;
+
 	platform1.posX = 632.0f;
 	platform1.posY = 512.0f;
-	
+	platform2.posX = 1152.0f;
+	platform2.posY = 320.0f;
+	platform3.posX = 1452.0f;
+	platform3.posY = 512.0f;
+	platform4.posX = 1728.0f;
+	platform4.posY = 768.0f;
+
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
 
 	// set enemies to be alive
 	enemy1.alive = true;
 	enemy2.alive = true;
+	game.enemies.empty();
 	game.enemies.push_back(&enemy1);
 	game.enemies.push_back(&enemy2);
+	game.enemies.push_back(&enemy3);
+	game.enemies.push_back(&enemy4);
+	game.enemies.push_back(&enemy5);
+	game.enemies.push_back(&enemy6);
+	game.enemies.push_back(&enemy7);
+	game.enemies.push_back(&enemy8);
+
 
 	// set player score to 0
 	game.playerScore = 0;
@@ -765,10 +814,29 @@ void initLevel2() {
 	playerEntity.posY = 32.0f;
 	enemy1.posX = 1200.0f;
 	enemy1.posY = 32.0f;
-	enemy2.posX = 600.0f;
-	enemy2.posY = 32.0f;
+	enemy2.posX = 736.0f;
+	enemy2.posY = 448.0f;
+	enemy3.posX = 1200.0f;
+	enemy3.posY = 448.0f;
+	enemy4.posX = 600.0f;
+	enemy4.posY = 160.0f;
+	enemy5.posX = 1300.0f;
+	enemy5.posY = 256.0f;
+	enemy6.posX = 1000.0f;
+	enemy6.posY = 544.0f;
+	enemy7.posX = 600.0f;
+	enemy7.posY = 3000.0f;
+	enemy8.posX = 600.0f;
+	enemy8.posY = 3000.0f;
+
 	platform1.posX = 632.0f;
-	platform1.posY = 512.0f;
+	platform1.posY = 480.0f;
+	platform2.posX = 1152.0f;
+	platform2.posY = 320.0f;
+	platform3.posX = 1452.0f;
+	platform3.posY = 512.0f;
+	platform4.posX = 1728.0f;
+	platform4.posY = 832.0f;
 
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
@@ -776,8 +844,15 @@ void initLevel2() {
 	// set enemies to be alive, add back to enemy list
 	enemy1.alive = true;
 	enemy2.alive = true;
+	game.enemies.empty();
 	game.enemies.push_back(&enemy1);
 	game.enemies.push_back(&enemy2);
+	game.enemies.push_back(&enemy3);
+	game.enemies.push_back(&enemy4);
+	game.enemies.push_back(&enemy5);
+	game.enemies.push_back(&enemy6);
+	game.enemies.push_back(&enemy7);
+	game.enemies.push_back(&enemy8);
 
 
 	// set player score to 0
@@ -802,12 +877,12 @@ void initLevel3() {
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D----------------G---------------1-----------------------------D";
+	game.levelMap += "D----------------1---------------1-----------------------------D";
 	game.levelMap += "D---------------###---##----##---#---##-----##----######-------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D----------------------------------------------------------####D";
-	game.levelMap += "D-----1-1------1-----------------------------------------------D";
+	game.levelMap += "D-----1-1------G-----------------------------------------------D";
 	game.levelMap += "D----#####----###--------------------------------------1-1-----D";
 	game.levelMap += "D---------------------1----------------------1-1------#########D";
 	game.levelMap += "D--------------------###--------------------#####--------------D";
@@ -836,10 +911,29 @@ void initLevel3() {
 	playerEntity.posY = 32.0f;
 	enemy1.posX = 1200.0f;
 	enemy1.posY = 32.0f;
-	enemy2.posX = 600.0f;
-	enemy2.posY = 32.0f;
+	enemy2.posX = 736.0f;
+	enemy2.posY = 448.0f;
+	enemy3.posX = 1000.0f;
+	enemy3.posY = 448.0f;
+	enemy4.posX = 600.0f;
+	enemy4.posY = 160.0f;
+	enemy5.posX = 1300.0f;
+	enemy5.posY = 256.0f;
+	enemy6.posX = 600.0f;
+	enemy6.posY = 3000.0f;
+	enemy7.posX = 600.0f;
+	enemy7.posY = 3000.0f;
+	enemy8.posX = 600.0f;
+	enemy8.posY = 3000.0f;
+
 	platform1.posX = 632.0f;
 	platform1.posY = 512.0f;
+	platform2.posX = 1152.0f;
+	platform2.posY = 320.0f;
+	platform3.posX = 1452.0f;
+	platform3.posY = 512.0f;
+	platform4.posX = 1728.0f;
+	platform4.posY = 768.0f;
 
 	// set player status to be alive (in case of restarting level)
 	playerEntity.alive = true;
@@ -847,8 +941,15 @@ void initLevel3() {
 	// set enemies to be alive
 	enemy1.alive = true;
 	enemy2.alive = true;
+	game.enemies.empty();
 	game.enemies.push_back(&enemy1);
 	game.enemies.push_back(&enemy2);
+	game.enemies.push_back(&enemy3);
+	game.enemies.push_back(&enemy4);
+	game.enemies.push_back(&enemy5);
+	game.enemies.push_back(&enemy6);
+	game.enemies.push_back(&enemy7);
+	game.enemies.push_back(&enemy8);
 
 	// set player score to 0
 	game.playerScore = 0;
@@ -876,8 +977,21 @@ void reshape(int width, int height)	{
 // initialise opengl window
 void init() {
 
-	// add entities to vector
+	// add moving platforms to vector
 	game.movingPlatforms.push_back(&platform1);
+	game.movingPlatforms.push_back(&platform2);
+	game.movingPlatforms.push_back(&platform3);
+	game.movingPlatforms.push_back(&platform4);
+
+	// add enemies to vector
+	game.enemies.push_back(&enemy1);
+	game.enemies.push_back(&enemy2);
+	game.enemies.push_back(&enemy3);
+	game.enemies.push_back(&enemy4);
+	game.enemies.push_back(&enemy5);
+	game.enemies.push_back(&enemy6);
+	game.enemies.push_back(&enemy7);
+	game.enemies.push_back(&enemy8);
 }
 
 // processes key presses
@@ -900,7 +1014,7 @@ void keyOperations() {
 				playerEntity.onGround = false;	// flag player as not being on ground
 				playerEntity.jumping = true;	// flag player as jumping
 				playerEntity.jumpTime = glutGet(GLUT_ELAPSED_TIME);
-				playerEntity.velY = 1.3f;
+				playerEntity.velY = 2.9f;
 			}
 
 			// check if player is jumping
@@ -1153,6 +1267,29 @@ void drawTitleScreen() {
 
 	glTexCoord2d(0.0, 0.0);
 	glVertex2f(titleX, titleY + titleH); // tl
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	// objective/controls texture
+	int objX = 450;
+	int objY = 50;
+	int objW = 400;
+	int objH = 256;
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, game.titleIcons[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2f(objX, objY);	// bl
+
+	glTexCoord2d(1.0, 1.0);
+	glVertex2f(objX + objW, objY);	// br
+
+	glTexCoord2d(1.0, 0.0);
+	glVertex2f(objX + objW, objY + objH);	// tr
+
+	glTexCoord2d(0.0, 0.0);
+	glVertex2f(objX, objY + objH); // tl
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
