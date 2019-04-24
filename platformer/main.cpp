@@ -61,10 +61,25 @@ int loadTextures()
 	(
 		"textures/tiles/GrassCliffMid.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
-	// loads image directly as texture
 	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
 		"textures/tiles/Dirt.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/bush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/Flower-1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/Flower-2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/Flower-3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.bgTexture.push_back(SOIL_load_OGL_texture
 	(
@@ -350,6 +365,26 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[3]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[4]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[5]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	glBindTexture(GL_TEXTURE_2D, game.bgTexture[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -609,7 +644,7 @@ void drawLevel() {
 		for (int y = 0; y < game.levelHeight; y++) {
 			char tile = game.getTile(&game, x, y);
 
-			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd') {
+			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd' || tile == 'b' || tile == 'q' || tile == 'w' || tile == 'e') {
 
 				// enable and bind texture relevant texture
 				glEnable(GL_TEXTURE_2D);
@@ -618,6 +653,22 @@ void drawLevel() {
 				}
 				if (tile == 'D') { // dirt tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[1]);
+				}
+
+				if (tile == 'b') { // bush tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[2]);
+				}
+
+				if (tile == 'q') { // bush tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[3]);
+				}
+
+				if (tile == 'w') { // bush tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[4]);
+				}
+
+				if (tile == 'e') { // bush tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[5]);
 				}
 
 				if (tile == '1') { // collectible coin tile
@@ -648,7 +699,24 @@ void drawLevel() {
 				if (game.gemSpriteFrame > 4)
 					game.gemSpriteFrame = 0;
 
-				glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+				// check if we need to draw anything that isn't exactly tile sized (eg. bushes)
+				if(tile == 'b') {
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight);
+
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + (game.tileWidth * 2), y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + (game.tileWidth * 2), y * game.tileHeight);
+					glEnd();
+				}
+				else {
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
 					glTexCoord2d(1.0, 1.0);
 					glVertex2f(x * game.tileWidth, y * game.tileHeight);
 
@@ -660,8 +728,8 @@ void drawLevel() {
 
 					glTexCoord2d(0.0, 1.0);
 					glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight);
-				glEnd();
-
+					glEnd();
+				}
 				glDisable(GL_TEXTURE_2D);
 			}
 		}
@@ -676,37 +744,41 @@ void initLevel1() {
 	//		1 : collectable (value 1)
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
+	//		b : bush
+	//		q : flower
+	//		w : flower
+	//		e : flower
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-1-1-1-1-1----------------------------------------------------D";
-	game.levelMap += "D-----------####-----------------------------------------------D";
-	game.levelMap += "D-------------------####---------------------------------------D";
-	game.levelMap += "D-------------------------------------###----------------######D";
-	game.levelMap += "D-------------------------------###----------------------------D";
-	game.levelMap += "D------------------------###-----------------------------------D";
+	game.levelMap += "D-1-1-1-1-1---w------------------------------------------------D";
+	game.levelMap += "D-----------####-----b-e---------------------------------------D";
+	game.levelMap += "D-------------------####--------------w-q-----------------b--q-D";
+	game.levelMap += "D-------------------------------e-----###----------------######D";
+	game.levelMap += "D-------------------------q-----###----------------------------D";
+	game.levelMap += "D----------------w-------###-----------------------------------D";
 	game.levelMap += "D---------------####-------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D------q-b-----------------------------------------------------D";
 	game.levelMap += "D-----######---------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D------------------------1--------1-------------1-1-1----------D";
+	game.levelMap += "D-w-b---e----------------1--------1-------------1-1-1----------D";
 	game.levelMap += "D#########-------------#####----#####----------#######---------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D----------------------------------------------------------1-1-D";
-	game.levelMap += "D---------------------------------------------------------#####D";
+	game.levelMap += "D---------b-q---------------------------------------------#####D";
 	game.levelMap += "D--------####--------------------------------------------------D";
-	game.levelMap += "D----------------------------------------G----------1----------D";
-	game.levelMap += "D----------------#####---------------#########-----###-------1-D";
-	game.levelMap += "D-----------------------------------------------------------###D";
+	game.levelMap += "D-----------------qb-----------------e-b-G--w-------1----------D";
+	game.levelMap += "D----------------#####---------------#########-----###------q1-D";
+	game.levelMap += "D-----------e-----------------------------------------------###D";
 	game.levelMap += "D----------###-------------------------------------------------D";
-	game.levelMap += "D-----1--------------------------------------------------1-----D";
+	game.levelMap += "D-----1--------------------------------------------------1w----D";
 	game.levelMap += "D---#####-----------------------------------------------###----D";
 	game.levelMap += "D------------------------------------------------------#DDD----D";
-	game.levelMap += "D------------------------------------------------1-1-----------D";
-	game.levelMap += "D###########--------------------------1-1-------#####----------D";
+	game.levelMap += "Dq-w----b-e-------------------------------------w1q1-----------D";
+	game.levelMap += "D###########--b--w--q-----------------1-1-------#####----------D";
 	game.levelMap += "DDDDDDDDDDDD#########----------------#####---------------------D";
-	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD----------------DDDDD---------------d-----D";
+	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD--e---w-e--b--q-DDDDDe-1-1b1-1w-w-q-d---b-D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -773,37 +845,41 @@ void initLevel2() {
 	//		1 : collectable (value 1)
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
+	//		b : bush
+	//		q : flower
+	//		w : flower
+	//		e : flower
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D------------G-------------------------------------------------D";
-	game.levelMap += "D-----------###----------------------1-------------------------D";
+	game.levelMap += "D-----------###------e----------w----1-------------------------D";
 	game.levelMap += "D-------------------##-----##---##--###------------------------D";
-	game.levelMap += "D-------------------------------------------1------------------D";
+	game.levelMap += "D-------b-q---------------------------------q------------------D";
 	game.levelMap += "D------####--------------------------------###-----------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-11---------------------------------------------1-------------D";
+	game.levelMap += "D-b1---------------------------------------------1-------------D";
 	game.levelMap += "D####-------------------------------------------###------------D";
-	game.levelMap += "D-------1-----------------------------------1------------------D";
+	game.levelMap += "D-------1-----------------------------------w------------------D";
 	game.levelMap += "D-------###--------------------------------###-----------------D";
 	game.levelMap += "D-------------1------------------------1-----------------------D";
 	game.levelMap += "D------------##-----------------------###----------------------D";
 	game.levelMap += "D-------1------------------------------------------------------D";
-	game.levelMap += "D-------##-----------------------1-1---------------------------D";
+	game.levelMap += "D-------##-----------------------1-1e--------------------------D";
 	game.levelMap += "D-------------1-----------------#####--------------------------D";
-	game.levelMap += "D------------##-------------------------1-1-1------------------D";
+	game.levelMap += "D------------##-----------b-q-----------1-1-1------------------D";
 	game.levelMap += "D-------1---------------#####----------#######-----------------D";
-	game.levelMap += "D-------##----------------------------------------11-----------D";
+	game.levelMap += "D-------##----------------------------------------1b-----------D";
 	game.levelMap += "D------------------------------------------------####----------D";
 	game.levelMap += "D-------------1------------------------------------------------D";
 	game.levelMap += "D------------##---------------------------------------11-------D";
 	game.levelMap += "D----------------------------------------------------####------D";
-	game.levelMap += "D--------1-1-1-------------------------------------------------D";
-	game.levelMap += "D-------#######----1-1-1-1-------------------1-1-1-------------D";
+	game.levelMap += "D--------1-1-1q------------------------------------------------D";
+	game.levelMap += "D-------#######----1-1w1b1------------------b1w1b1-e-----------D";
 	game.levelMap += "D-----------------#########---------------##########-----------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D------------------------------d-------1-1-1------1-1-1--------D";
+	game.levelMap += "D--q-e----e-----b--q-w----e----d---b---1-1b1--w---1-1-1---b----D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -870,6 +946,10 @@ void initLevel3() {
 	//		1 : collectable (value 1)
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
+	//		b : bush
+	//		q : flower
+	//		w : flower
+	//		e : flower
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -877,30 +957,30 @@ void initLevel3() {
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D----------------1---------------1-----------------------------D";
+	game.levelMap += "D----------------1-----q---------1----w-------------b-e--------D";
 	game.levelMap += "D---------------###---##----##---#---##-----##----######-------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D------------------------------------------------------------q-D";
 	game.levelMap += "D----------------------------------------------------------####D";
 	game.levelMap += "D-----1-1------G-----------------------------------------------D";
-	game.levelMap += "D----#####----###--------------------------------------1-1-----D";
-	game.levelMap += "D---------------------1----------------------1-1------#########D";
+	game.levelMap += "D----#####----###--------------------------------------1-1--b--D";
+	game.levelMap += "D---------------------w----------------------1b1------#########D";
 	game.levelMap += "D--------------------###--------------------#####--------------D";
-	game.levelMap += "D-1---------------------------1------------#-------------------D";
+	game.levelMap += "Dq1---------------------------1------------#-------------------D";
 	game.levelMap += "D###-------------------------###-----------------------------d-D";
-	game.levelMap += "D--------11---------------------------###-------------------###D";
-	game.levelMap += "D-------####-------------------------#DD-----------------------D";
+	game.levelMap += "D--------b1---------------------------###-------------------###D";
+	game.levelMap += "D-------####-------------------------#DD----------------e------D";
 	game.levelMap += "D------------------------------------------------------###-----D";
-	game.levelMap += "D-1-1----------1-1-1-----1------1------------------------------D";
+	game.levelMap += "D-1e1----------1-qw1-----1------1-----------------b------------D";
 	game.levelMap += "D#####--------#######---###----###---------------###-----------D";
 	game.levelMap += "D-----##-------------------------------------------------------D";
-	game.levelMap += "D-------------------------------------------------------1------D";
+	game.levelMap += "D--------------------------------------b----------------wq-----D";
 	game.levelMap += "D---------1---------------------------###--------------###-----D";
 	game.levelMap += "D--------###---------------------------------------------------D";
-	game.levelMap += "D-1-----------------------------------------1-1-1-1----------1-D";
+	game.levelMap += "D-1-----------------------------------------1b1-1w1----------1-D";
 	game.levelMap += "D###---------------------------------------#########--------###D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D--------------------------------------------------------------D";
+	game.levelMap += "D---b-----q-e--w---b--q--b-----w-q-w--e---b--q-----e----b------D";
 	game.levelMap += "###############################################################D";
 
 	// reverses level map string so it is rendered the right way round
