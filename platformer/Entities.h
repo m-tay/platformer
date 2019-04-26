@@ -60,6 +60,7 @@ public:
 	char tileBR;
 	bool onGround;	// holds whether entity is on ground
 	bool jumping;	// holds whether entity is in process of jumping
+	bool idle;		// holds whether entity is idle (not moving)
 	bool alive = true;	// holds whether entity is alive
 	int jumpTime;	// holds how long entity has been in air
 	float playerSpriteFrame = 0.0f; // tracks the playerSpriteFrame for animating the sprite

@@ -71,6 +71,7 @@ public:
 	vector<GLuint> playerSpriteRunning;	// stores player sprite running
 	vector<GLuint> playerSpriteStillShooting;
 	vector<GLuint> playerSpriteRunShooting;
+	vector<GLuint> playerSpriteIdle;
 	vector<GLuint> bulletSprite;
 	vector<GLuint> coinSprite;			// stores spinning coin sprite
 	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy

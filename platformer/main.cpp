@@ -185,6 +185,26 @@ int loadTextures()
 	(
 		"textures/sprites/player/shoot/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.playerSpriteIdle.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/idle/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteIdle.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/idle/tile001.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteIdle.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/idle/tile002.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteIdle.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/idle/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.playerSpriteIdle.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/player/idle/tile004.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	game.buttons.push_back(SOIL_load_OGL_texture
 	(
 		"textures/buttons/Cloud_start.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
@@ -422,6 +442,13 @@ int loadTextures()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 
+	// set texture parameters for player idle sprite
+	for (int i = 0; i < game.playerSpriteIdle.size(); i++) {
+		glBindTexture(GL_TEXTURE_2D, game.playerSpriteIdle[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+	
 	glBindTexture(GL_TEXTURE_2D, game.buttons[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -586,6 +613,7 @@ int loadTextures()
 
 	// add loaded textures to entities
 	playerEntity.spriteSet.push_back(game.playerSpriteRunning);
+	playerEntity.spriteSet.push_back(game.playerSpriteIdle);
 	enemy1.spriteSet.push_back(game.enemy1Texture);
 	enemy2.spriteSet.push_back(game.enemy1Texture);
 	enemy3.spriteSet.push_back(game.enemy1Texture);

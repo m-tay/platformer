@@ -299,8 +299,6 @@ bool Entity::isCollidingWithMovingPlatform() {
 				velY = 0;
 			}
 
-			cout << glutGet(GLUT_ELAPSED_TIME) << " : on platform" << endl;
-
 			return true;
 		}
 	}
@@ -383,11 +381,17 @@ void Entity::updatePosition() {
 	newPosY = posY + (velY * game->deltaTime);
 
 	// update playing facing position (does not matter if blocked)
-	if (velX > 0)
+	if (velX > 0) {
 		facing = 'r';
-
-	if (velX < 0)
+		idle = false;
+	}
+	if (velX < 0) {
 		facing = 'l';
+		idle = false;
+	}
+
+	if (velX == 0)
+		idle = true;
 
 	// perform collision detection if player is alive
 	if (alive) {
@@ -395,13 +399,15 @@ void Entity::updatePosition() {
 		// update for collisions with collectibles, update them
 		checkSpecialTiles();
 
-		// check for collision with tilemap in x axis
-		if (!isCollidingWithMovingPlatform() && !isCollidingX())
-			posX = newPosX;
+		if (!isCollidingWithMovingPlatform()) {
+			// check for collision with tilemap in x axis
+			if (!isCollidingX())
+				posX = newPosX;
 
-		// check for collision in with tilemap y axis
-		if (!isCollidingWithMovingPlatform() && !isCollidingY())
-			posY = newPosY;
+			// check for collision in with tilemap y axis
+			if (!isCollidingY())
+				posY = newPosY;
+		}
 
 		// check for collisions with enemies
 		if (isCollidingWithEnemies()) {
@@ -440,7 +446,22 @@ void Entity::draw() {
 
 	// enable textures and bind the texture from [0] in spriteSet (running texture)
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)playerSpriteFrame]);
+
+	// set running or idle texture set based on player's x velocity
+	if(idle) {
+		if ((int)playerSpriteFrame > (spriteSet[1].size() - 1))
+			playerSpriteFrame = 0;
+
+		// player = moving, set "running" texture
+		glBindTexture(GL_TEXTURE_2D, spriteSet[1][(int)playerSpriteFrame]);
+	}
+	else {
+		if ((int)playerSpriteFrame > spriteSet[0].size())
+			playerSpriteFrame = 0;
+
+		// player = still, set "idle" texture
+		glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)playerSpriteFrame]);
+	}
 
 	// draw and texture the entity
 	glBegin(GL_QUADS);
