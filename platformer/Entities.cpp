@@ -489,9 +489,6 @@ void Entity::updatePosition() {
 			game->gameStage = "gameover";
 	}
 
-	if (!onGround)
-		cout << "in air" << endl;
-
 	// apply gravity 
 	if (!onGround)
 		velY -= (game->gravityRate * game->deltaTime);
