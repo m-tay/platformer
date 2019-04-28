@@ -167,7 +167,33 @@ void Entity::checkSpecialTiles() {
 	char tileTR = game->getTile(game, tileRight, tileTop);
 	char tileBL = game->getTile(game, tileLeft, tileBottom);
 	char tileBR = game->getTile(game, tileRight, tileBottom);
-	
+
+	// hitting water
+	if (tileTL == 'W') {
+		velY = 1.5f;		// add a big jump before falling off screen dead
+		onGround = false;	// set onGround flag so gravity applies
+		alive = false;
+	}
+
+	if (tileTR == 'W') {
+		velY = 1.5f;		// add a big jump before falling off screen dead
+		onGround = false;	// set onGround flag so gravity applies
+		alive = false;
+	}
+
+	if (tileBL == 'W') {
+		velY = 1.5f;		// add a big jump before falling off screen dead
+		onGround = false;	// set onGround flag so gravity applies
+		alive = false;
+	}
+
+	if (tileBR == 'W') {
+		velY = 1.5f;		// add a big jump before falling off screen dead
+		onGround = false;	// set onGround flag so gravity applies
+		alive = false;
+	}
+
+
 	// update player score, remove collectable
 	if(tileTL == '1') {
 		game->playerScore++;	// update score
@@ -428,9 +454,6 @@ void Entity::updatePosition() {
 	// perform collision detection if player is alive
 	if (alive) {
 
-		// update for collisions with collectibles, update them
-		checkSpecialTiles();
-
 		if (!isCollidingWithMovingPlatform()) {
 			// check for collision with tilemap in x axis
 			if (!isCollidingX())
@@ -451,6 +474,9 @@ void Entity::updatePosition() {
 
 		// also update position on moving platforms
 		trackMovingPlatforms();
+
+		// update for collisions with collectibles, update them
+		checkSpecialTiles();
 	}
 	// if player is not alive
 	else { 
@@ -462,6 +488,9 @@ void Entity::updatePosition() {
 		if (posY < -3000)
 			game->gameStage = "gameover";
 	}
+
+	if (!onGround)
+		cout << "in air" << endl;
 
 	// apply gravity 
 	if (!onGround)

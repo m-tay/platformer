@@ -69,6 +69,7 @@ public:
 	vector<GLuint> tileTextures;		// stores level tile textures
 	vector<GLuint> bgTexture;			// stores background textures
 	vector<GLuint> titleIcons;			// stores title screen iconography
+	vector<GLuint> waterTexture;			// stores water textures
 	vector<GLuint> playerSpriteRunning;	// stores player sprite running
 	vector<GLuint> playerSpriteStillShooting;
 	vector<GLuint> playerSpriteRunShooting;
@@ -86,6 +87,7 @@ public:
 	float coinSpriteFrame = 0;		// coin spin frame counter
 	float gemSpriteFrame = 0;		// gem shine frame counter
 	float cloudGlowSpriteFrame = 0;	// cloud glow frame counter
+	float waterSpriteFrame = 0;		// water animating frame counter
 
 	// vector of vectors to store textures
 	vector<vector<GLuint> > playerTextures;

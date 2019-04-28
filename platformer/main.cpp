@@ -87,6 +87,62 @@ int loadTextures()
 	(
 		"textures/tiles/Flower-3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/4.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/5.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/6.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/7.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/8.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/9.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/10.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/11.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/12.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/13.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.waterTexture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/water/14.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	game.bgTexture.push_back(SOIL_load_OGL_texture
 	(
 		"textures/bg/Background.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
@@ -427,6 +483,13 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	// set texture parameters for water animating sprite
+	for (int i = 0; i < game.waterTexture.size(); i++) {
+		glBindTexture(GL_TEXTURE_2D, game.waterTexture[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
 	glBindTexture(GL_TEXTURE_2D, game.bgTexture[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -716,15 +779,21 @@ void drawLevel() {
 		for (int y = 0; y < game.levelHeight; y++) {
 			char tile = game.getTile(&game, x, y);
 
-			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd' || tile == 'b' || tile == 'q' || tile == 'w' || tile == 'e') {
+			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd' || tile == 'b' || \
+				tile == 'q' || tile == 'w' || tile == 'e' || tile == 'W') {
 
 				// enable and bind texture relevant texture
 				glEnable(GL_TEXTURE_2D);
 				if (tile == '#') { // grass tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[0]);
 				}
+
 				if (tile == 'D') { // dirt tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[1]);
+				}
+				
+				if (tile == 'W') { // water tile
+					glBindTexture(GL_TEXTURE_2D, game.waterTexture[(int)game.waterSpriteFrame]);
 				}
 
 				if (tile == 'b') { // bush tile
@@ -760,8 +829,6 @@ void drawLevel() {
 					else {
 						glBindTexture(GL_TEXTURE_2D, game.doorTexture[0]);
 					}
-					
-
 				}
 
 				// check and reset frame limit for sprites
@@ -770,6 +837,9 @@ void drawLevel() {
 
 				if (game.gemSpriteFrame > 4)
 					game.gemSpriteFrame = 0;
+
+				if (game.waterSpriteFrame > 14)
+					game.waterSpriteFrame = 0;
 
 				// check if we need to draw anything that isn't exactly tile sized (eg. bushes)
 				if(tile == 'b') {
@@ -820,6 +890,7 @@ void initLevel1() {
 	//		q : flower
 	//		w : flower
 	//		e : flower
+	//		W : water
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -848,10 +919,10 @@ void initLevel1() {
 	game.levelMap += "D---#####-----------------------------------------------###----D";
 	game.levelMap += "D------------------------------------------------------#DDD----D";
 	game.levelMap += "Dq-w----b-e-------------------------------------w1q1-----------D";
-	game.levelMap += "D###########--b--w--q-----------------1-1-------#####----------D";
-	game.levelMap += "DDDDDDDDDDDD#########----------------#####---------------------D";
-	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD--e---w-e--b--q-DDDDDe-1-1b1-1w-w-q-d---b-D";
-	game.levelMap += "###############################################################D";
+	game.levelMap += "D###########--b--w--q---------------------------#####----------D";
+	game.levelMap += "DDDDDDDDDDDD#########------------------------------------------D";
+	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD--------###WWWWWWW#####-------------d---b-D";
+	game.levelMap += "#############################DDDDDDDDDDDDDDD###################D";
 
 	// reverses level map string so it is rendered the right way round
 	reverse(game.levelMap.begin(), game.levelMap.end());
@@ -936,6 +1007,7 @@ void initLevel2() {
 	//		q : flower
 	//		w : flower
 	//		e : flower
+	//		W : water
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -1052,6 +1124,7 @@ void initLevel3() {
 	//		q : flower
 	//		w : flower
 	//		e : flower
+	//		W : water
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -1758,6 +1831,7 @@ void doGameLevel() {
 	playerEntity.playerSpriteFrame += 0.01f;	// update playerSpriteFrame animation
 	game.coinSpriteFrame += 0.01f;				// update coin sprite frame
 	game.gemSpriteFrame += 0.01f;				// update gem sprite frame
+	game.waterSpriteFrame += 0.03f;				// update water animation frame
 	
 	// draw all moving platforms
 	for (int i = 0; i < game.movingPlatforms.size(); i++) {
