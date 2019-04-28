@@ -174,7 +174,7 @@ public:
 	char direction;
 	bool active = true;
 
-   // holds tile coords surrounding entity (x,y)
+    // holds tile coords surrounding entity (x,y)
 	int tileLeft, tileRight, tileTop, tileBottom;
 
 	// spriteSet holds all a vector of GLuint arrays to store all the textures
@@ -194,4 +194,43 @@ public:
 
 	// draws the entity
 	void draw();
+};
+
+// class for ghosts, extending enemy
+class Ghost {
+	
+public:
+	// constructor
+	Ghost(Game& gameObj, Entity& player, float x, float y);
+
+	Game *game;
+	Entity *playerEntity;
+	float posX;	// position
+	float posY;
+	float velX = 0.0f;	// velocity
+	float velY = 0.0f;
+	float newPosX;
+	float newPosY;
+	char tileTL;	// holds the 4 tiles around the entity
+	char tileTR;
+	char tileBL;
+	char tileBR;
+	bool active = false; // ghosts start the level inactive
+	float spriteFrame = 0.0f; // tracks the enemy1 sprite frame for animating the sprite
+	char facing = 'r'; // holds direction entity is facing (for sprite mirroring)
+	float ghostSpeed = 0.02f;
+
+	// holds tile coords surrounding entity (x,y)
+	int tileLeft, tileRight, tileTop, tileBottom;
+
+	// spriteSet holds all a vector of GLuint arrays to store all the textures
+	// vector[0] - walking animation	
+	vector<vector<GLuint> >spriteSet;
+
+	// update entity position based on velocity
+	void updatePosition();
+
+	// draws the entity
+	void draw();
+	
 };

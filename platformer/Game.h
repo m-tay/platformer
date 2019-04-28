@@ -10,6 +10,7 @@ class MovingPlatform;
 class Entity;
 class Enemy;
 class Projectile;
+class Ghost;
 
 // struct to hold (x,y) coords
 struct Point {
@@ -75,12 +76,12 @@ public:
 	vector<GLuint> bulletSprite;
 	vector<GLuint> coinSprite;			// stores spinning coin sprite
 	vector<GLuint> enemy1Texture;		// stores sprite for bat enemy
+	vector<GLuint> enemy2Texture;		// stores sprite for ghost enemy
 	vector<GLuint> buttons;				// stores button textures
 	vector<GLuint> buttonGlow;			// stores button glow textures
 	vector<GLuint> gemTexture;			// stores the object gem sprite
 	vector<GLuint> doorTexture;			// stores the door texture ([0] for shut, [1] for open)
 	
-
 	// texture frame counters
 	float coinSpriteFrame = 0;		// coin spin frame counter
 	float gemSpriteFrame = 0;		// gem shine frame counter
@@ -93,6 +94,7 @@ public:
 	// vectors to store game objects
 	vector<MovingPlatform*> movingPlatforms;
 	vector<Enemy*> enemies;
+	vector<Ghost*> ghosts;
 	vector<Projectile> projectiles;	// keeps track of all bullets 
 
 	// stores selected position on menu screen
@@ -144,6 +146,12 @@ public:
 		}
 		glEnd();
 	}
+
+	// utility function to set all ghosts to active
+	void activateGhosts(Game *game);
+
+	// utility function to set all ghosts to inactive
+	void deactivateGhosts(Game *game);
 
 };
 

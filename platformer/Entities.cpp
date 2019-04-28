@@ -193,24 +193,28 @@ void Entity::checkSpecialTiles() {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileLeft, tileTop);
 		game->gemCollected = true;
+		game->activateGhosts(game);
 	}
 
 	if (tileTR == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileRight, tileTop);
 		game->gemCollected = true;
+		game->activateGhosts(game);
 	}
 
 	if (tileBL == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileLeft, tileBottom);
 		game->gemCollected = true;
+		game->activateGhosts(game);
 	}
 
 	if (tileBR == 'G') {
 		game->playerScore += 10;	// update score
 		game->emptyTile(game, tileRight, tileBottom);
 		game->gemCollected = true;
+		game->activateGhosts(game);
 	}
 
 	// if gem is collected, check for level exit collision
@@ -352,6 +356,34 @@ bool Entity::isCollidingWithEnemies() {
 			glBegin(GL_LINES);
 				glVertex2f(entityX, entityY);
 				glVertex2f(enemyX, enemyY);
+			glEnd();
+		}
+
+		// calculate distance between circles
+		float distX = entityX - enemyX;
+		float distY = entityY - enemyY;
+		float dist = sqrt((distX * distX) + (distY * distY));
+
+		// collision detection - check if distance between circles is less than sum of radius (tile width)
+		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+			velY = 1.5f;				// add a big jump before falling off screen dead
+			onGround = false;			// set onGround flag so gravity applies
+			return true;				// collision detected
+		}
+	}
+
+	// for each ghost
+	for (int i = 0; i < game->ghosts.size(); i++) {
+
+		// offset x,y pos by half tile widths to calc bounding circle
+		float enemyX = game->ghosts.at(i)->posX + game->halfTileW;
+		float enemyY = game->ghosts.at(i)->posY + game->halfTileH;
+
+		// debug mode - draw collision detection distance
+		if (game->debug) {
+			glBegin(GL_LINES);
+			glVertex2f(entityX, entityY);
+			glVertex2f(enemyX, enemyY);
 			glEnd();
 		}
 
@@ -922,6 +954,130 @@ void Projectile::draw() {
 			calculateSurroundingTiles();	// calculates surrounding tiles
 
 			// draw tile mapping 
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileRight * game->tileWidth, tileBottom * game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileBottom * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileRight * game->tileWidth, tileTop * game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileRight * game->tileWidth + game->tileWidth, tileTop * game->tileHeight);
+			glEnd();
+
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(tileLeft * game->tileWidth, tileTop * game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileTop * game->tileHeight + game->tileHeight);
+			glVertex2f(tileLeft * game->tileWidth + game->tileWidth, tileTop * game->tileHeight);
+			glEnd();
+
+			// draw collision circle
+			// shift x,y by half a tile, because entity position is stored from bottom left
+			game->drawCircle(posX + game->halfTileW, posY + game->halfTileW, game->halfTileW);
+
+		}
+	}
+}
+
+// constructor
+Ghost::Ghost(Game& gameObj, Entity& player, float x, float y) {
+	posX = x;
+	posY = y;
+	game = &gameObj;
+	playerEntity = &player;
+}
+
+
+// update entity position based on velocity
+void Ghost::updatePosition() {
+
+	// track the player and move towards it
+	if (posX < playerEntity->posX)
+		velX = ghostSpeed;
+
+	if (posX > playerEntity->posX)
+		velX = -ghostSpeed;
+
+	if (posY < playerEntity->posY)
+		velY = ghostSpeed;
+
+	if (posY > playerEntity->posY)
+		velY = -ghostSpeed;
+
+	// calculate proposed new position
+	newPosX = posX + (velX * game->deltaTime);
+	newPosY = posY + (velY * game->deltaTime);
+
+	// update enemy facing position (does not matter if blocked)
+	if (velX > 0)
+		facing = 'r';
+
+	if (velX < 0)
+		facing = 'l';
+
+	// update position
+	posX = newPosX;
+	posY = newPosY;
+}
+
+// draws the entity
+void Ghost::draw() {
+
+	// only draw if active
+	if (active) {
+
+		updatePosition();
+
+		if (spriteFrame > spriteSet[0].size()) // cycle playerSpriteFrame animation back to start
+			spriteFrame = 0;
+
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, spriteSet[0][(int)spriteFrame]);
+
+		// draw and texture the entity
+		glBegin(GL_QUADS);
+		if (facing == 'r')
+			glTexCoord2d(0.0, 1.0);
+		else
+			glTexCoord2d(1.0, 1.0);
+		glVertex2f(posX, posY);
+
+		if (facing == 'r')
+			glTexCoord2d(1.0, 1.0);
+		else
+			glTexCoord2d(0.0, 1.0);
+		glVertex2f(posX + game->tileWidth, posY);
+
+		if (facing == 'r')
+			glTexCoord2d(1.0, 0.0);
+		else
+			glTexCoord2d(0.0, 0.0);
+		glVertex2f(posX + game->tileWidth, posY + game->tileHeight);
+
+		if (facing == 'r')
+			glTexCoord2d(0.0, 0.0);
+		else
+			glTexCoord2d(1.0, 0.0);
+		glVertex2f(posX, posY + game->tileHeight);
+		glEnd();
+
+		glDisable(GL_TEXTURE_2D);
+
+		// debug mode - draw surrounding tiles
+		if (game->debug) {
+
+			// draw detected surrounding tiles
 			glBegin(GL_LINE_LOOP);
 			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight);
 			glVertex2f(tileLeft * game->tileWidth, tileBottom * game->tileHeight + game->tileHeight);

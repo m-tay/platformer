@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Entities.h"
 #include <sstream>
 
 
@@ -52,4 +53,20 @@ void Game::drawScore(Game* game) {
 			glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+}
+
+void Game::activateGhosts(Game* game) {
+	// loop through all ghosts
+	for(int i = 0; i < game->ghosts.size(); i++) {
+		// set them to active
+		game->ghosts[i]->active = true;
+	}
+}
+
+void Game::deactivateGhosts(Game* game) {
+	// loop through all ghosts
+	for (int i = 0; i < game->ghosts.size(); i++) {
+		// set them to active
+		game->ghosts[i]->active = false;
+	}
 }

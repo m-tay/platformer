@@ -27,6 +27,12 @@ Enemy enemy5(game, 0, 0);
 Enemy enemy6(game, 0, 0);
 Enemy enemy7(game, 0, 0);
 Enemy enemy8(game, 0, 0);
+Ghost ghost1(game, playerEntity, 0, 200);
+Ghost ghost2(game, playerEntity, 0, 670);
+Ghost ghost3(game, playerEntity, 0, 800);
+Ghost ghost4(game, playerEntity, 2048, 110);
+Ghost ghost5(game, playerEntity, 2048, 475);
+Ghost ghost6(game, playerEntity, 2048, 950);
 
 // create moving platform object
 MovingPlatform platform1(game, 0, 0);	// moving platform
@@ -333,6 +339,22 @@ int loadTextures()
 	(
 		"textures/sprites/3/tile003.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
+	game.enemy2Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/5/g0.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy2Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/5/g1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy2Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/5/g2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.enemy2Texture.push_back(SOIL_load_OGL_texture
+	(
+		"textures/sprites/5/g3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
 	game.gemTexture.push_back(SOIL_load_OGL_texture
 	(
 		"textures/sprites/4/tile000.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
@@ -573,6 +595,22 @@ int loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, game.enemy2Texture[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.enemy2Texture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.enemy2Texture[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, game.enemy2Texture[3]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	glBindTexture(GL_TEXTURE_2D, game.gemTexture[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -607,7 +645,7 @@ int loadTextures()
 		cout << "Problem binding/setting texture parameters" << endl;
 	}
 
-	// enable blending on the alpha channel
+	// enable blending on the alpha channel so textures have transparency
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -622,6 +660,12 @@ int loadTextures()
 	enemy6.spriteSet.push_back(game.enemy1Texture);
 	enemy7.spriteSet.push_back(game.enemy1Texture);
 	enemy8.spriteSet.push_back(game.enemy1Texture);
+	ghost1.spriteSet.push_back(game.enemy2Texture);
+	ghost2.spriteSet.push_back(game.enemy2Texture);
+	ghost3.spriteSet.push_back(game.enemy2Texture);
+	ghost4.spriteSet.push_back(game.enemy2Texture);
+	ghost5.spriteSet.push_back(game.enemy2Texture);
+	ghost6.spriteSet.push_back(game.enemy2Texture);
 		
 	return true;
 }
@@ -857,6 +901,21 @@ void initLevel1() {
 	game.enemies.push_back(&enemy7);
 	game.enemies.push_back(&enemy8);
 
+	// reset ghosts
+	game.deactivateGhosts(&game);
+
+	ghost1.posX = 0;
+	ghost1.posY = 200;
+	ghost2.posX = 0;
+	ghost2.posY = 670;
+	ghost3.posX = 0;
+	ghost3.posY = 800;
+	ghost4.posX = 2048;
+	ghost4.posY = 110;
+	ghost5.posX = 2048;
+	ghost5.posY = 475;
+	ghost6.posX = 2048;
+	ghost6.posY = 950;
 
 	// set player score to 0
 	game.playerScore = 0;
@@ -958,6 +1017,21 @@ void initLevel2() {
 	game.enemies.push_back(&enemy7);
 	game.enemies.push_back(&enemy8);
 
+	// reset ghosts
+	game.deactivateGhosts(&game);
+
+	ghost1.posX = 0;
+	ghost1.posY = 200;
+	ghost2.posX = 0;
+	ghost2.posY = 670;
+	ghost3.posX = 0;
+	ghost3.posY = 800;
+	ghost4.posX = 2048;
+	ghost4.posY = 110;
+	ghost5.posX = 2048;
+	ghost5.posY = 475;
+	ghost6.posX = 2048;
+	ghost6.posY = 950;
 
 	// set player score to 0
 	game.playerScore = 0;
@@ -1059,6 +1133,22 @@ void initLevel3() {
 	game.enemies.push_back(&enemy7);
 	game.enemies.push_back(&enemy8);
 
+	// reset ghosts
+	game.deactivateGhosts(&game);
+
+	ghost1.posX = 0;
+	ghost1.posY = 200;
+	ghost2.posX = 0;
+	ghost2.posY = 670;
+	ghost3.posX = 0;
+	ghost3.posY = 800;
+	ghost4.posX = 2048;
+	ghost4.posY = 110;
+	ghost5.posX = 2048;
+	ghost5.posY = 475;
+	ghost6.posX = 2048;
+	ghost6.posY = 950;
+
 	// set player score to 0
 	game.playerScore = 0;
 
@@ -1068,16 +1158,19 @@ void initLevel3() {
 
 // resizes opengl windows
 void reshape(int width, int height)	{
-	game.screenWidth = width; game.screenHeight = height;	// to ensure the mouse coordinates match 
-															// we will use these values to set the coordinate system
+	game.screenWidth = width; game.screenHeight = height;	
+
+	// set viewport to given dimensions
 	glViewport(0, 0, width, height);
 
+	// load projection matrix + reset it
 	glMatrixMode(GL_PROJECTION);						
 	glLoadIdentity();
 
 	// set the coordinate system for the window
 	gluOrtho2D(0, game.screenWidth, 0, game.screenHeight);        
 
+	// load modelview matrix + reset it
 	glMatrixMode(GL_MODELVIEW);						
 	glLoadIdentity();
 }
@@ -1100,6 +1193,13 @@ void init() {
 	game.enemies.push_back(&enemy6);
 	game.enemies.push_back(&enemy7);
 	game.enemies.push_back(&enemy8);
+
+	game.ghosts.push_back(&ghost1);
+	game.ghosts.push_back(&ghost2);
+	game.ghosts.push_back(&ghost3);
+	game.ghosts.push_back(&ghost4);
+	game.ghosts.push_back(&ghost5);
+	game.ghosts.push_back(&ghost6);
 }
 
 // processes key presses
@@ -1676,8 +1776,12 @@ void doGameLevel() {
 		else {
 			game.enemies.erase(game.enemies.begin() + i);
 		}
+	}
 
-
+	// draw all ghost objects
+	for (int i = 0; i < game.ghosts.size(); i++) {
+		game.ghosts.at(i)->spriteFrame += 0.01f;	// update animation frame
+		game.ghosts.at(i)->draw();					// draw enemy
 	}
 
 	// draw all bullets
