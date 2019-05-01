@@ -28,11 +28,11 @@ Enemy enemy6(game, 0, 0);
 Enemy enemy7(game, 0, 0);
 Enemy enemy8(game, 0, 0);
 Ghost ghost1(game, playerEntity, 0, 200);
-Ghost ghost2(game, playerEntity, 0, 670);
-Ghost ghost3(game, playerEntity, 0, 800);
+Ghost ghost2(game, playerEntity, 400, 670);
+Ghost ghost3(game, playerEntity, 600, 800);
 Ghost ghost4(game, playerEntity, 2048, 110);
-Ghost ghost5(game, playerEntity, 2048, 475);
-Ghost ghost6(game, playerEntity, 2048, 950);
+Ghost ghost5(game, playerEntity, 1800, 475);
+Ghost ghost6(game, playerEntity, 1000, 950);
 
 // create moving platform object
 MovingPlatform platform1(game, 0, 0);	// moving platform
@@ -86,6 +86,18 @@ int loadTextures()
 	game.tileTextures.push_back(SOIL_load_OGL_texture
 	(
 		"textures/tiles/Flower-3.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/grass1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/grass2.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
+
+	game.tileTextures.push_back(SOIL_load_OGL_texture
+	(
+		"textures/tiles/tree.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS));
 
 	game.waterTexture.push_back(SOIL_load_OGL_texture
 	(
@@ -462,26 +474,49 @@ int loadTextures()
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[1]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+	// bush texture - clamp wrapping to avoid artifacts
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[2]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
+	// flower 1 texture - clamp wrapping to avoid artifacts
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[3]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
+	// flower 2 texture - clamp wrapping to avoid artifacts
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[4]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
+	// flower 3 texture - clamp wrapping to avoid artifacts
 	glBindTexture(GL_TEXTURE_2D, game.tileTextures[5]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	// grass texture 1 - clamp wrapping to avoid artifacts
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[6]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	// grass texture 2 - clamp wrapping to avoid artifacts
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[7]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	// tree texture - clamp wrapping to avoid artifacts
+	glBindTexture(GL_TEXTURE_2D, game.tileTextures[8]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	// set texture parameters for water animating sprite
 	for (int i = 0; i < game.waterTexture.size(); i++) {
@@ -780,7 +815,7 @@ void drawLevel() {
 			char tile = game.getTile(&game, x, y);
 
 			if (tile == '#' || tile == 'D' || tile == '1' || tile == 'G' || tile == 'd' || tile == 'b' || \
-				tile == 'q' || tile == 'w' || tile == 'e' || tile == 'W') {
+				tile == 'q' || tile == 'w' || tile == 'e' || tile == 'W' || tile == 't') {
 
 				// enable and bind texture relevant texture
 				glEnable(GL_TEXTURE_2D);
@@ -800,16 +835,20 @@ void drawLevel() {
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[2]);
 				}
 
-				if (tile == 'q') { // bush tile
+				if (tile == 'q') { // flower 1 tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[3]);
 				}
 
-				if (tile == 'w') { // bush tile
+				if (tile == 'w') { // flower 2 tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[4]);
 				}
 
-				if (tile == 'e') { // bush tile
+				if (tile == 'e') { // flower 3 tile
 					glBindTexture(GL_TEXTURE_2D, game.tileTextures[5]);
+				}
+
+				if (tile == 't') { // tree tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[8]);
 				}
 
 				if (tile == '1') { // collectible coin tile
@@ -842,7 +881,7 @@ void drawLevel() {
 					game.waterSpriteFrame = 0;
 
 				// check if we need to draw anything that isn't exactly tile sized (eg. bushes)
-				if(tile == 'b') {
+				if(tile == 'b') {	// bush drawing
 					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
 					glTexCoord2d(1.0, 1.0);
 					glVertex2f(x * game.tileWidth, y * game.tileHeight);
@@ -855,6 +894,21 @@ void drawLevel() {
 
 					glTexCoord2d(0.0, 1.0);
 					glVertex2f(x * game.tileWidth + (game.tileWidth * 2), y * game.tileHeight);
+					glEnd();
+				}				
+				else if(tile == 't') { // tree drawing
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth - (2 * game.tileWidth), y * game.tileHeight);
+
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth - (2 * game.tileWidth), y * game.tileHeight + (5 * game.tileHeight));
+
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + (2 * game.tileWidth), y * game.tileHeight + (5 * game.tileHeight));
+
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + (2 * game.tileWidth), y * game.tileHeight);
 					glEnd();
 				}
 				else {
@@ -878,6 +932,85 @@ void drawLevel() {
 	}
 }
 
+void drawLevelForeground() {
+
+	// draw tiles
+	for (int x = 0; x < game.levelWidth; x++) {
+		for (int y = 0; y < game.levelHeight; y++) {
+			char tile = game.getTile(&game, x, y);
+
+			if (tile == 'z' || tile == 'x' || tile == 'B' || tile == 'T') {
+
+				// enable and bind texture relevant texture
+				glEnable(GL_TEXTURE_2D);
+				if (tile == 'z') { // grass tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[6]);
+				}
+
+				if (tile == 'x') { // grass tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[7]);
+				}
+
+				if (tile == 'B') { // grass tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[2]);
+				}
+
+				if (tile == 'T') { // grass tile
+					glBindTexture(GL_TEXTURE_2D, game.tileTextures[8]);
+				}
+
+				// check if we need to draw anything that isn't exactly tile sized (eg. bushes)
+				if (tile == 'B') {
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight);
+
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + (game.tileWidth * 2), y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + (game.tileWidth * 2), y * game.tileHeight);
+					glEnd();
+				}
+				else if (tile == 'T') { // tree drawing
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth - (2 * game.tileWidth), y * game.tileHeight);
+
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth - (2 * game.tileWidth), y * game.tileHeight + (5 * game.tileHeight));
+
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + (2 * game.tileWidth), y * game.tileHeight + (5 * game.tileHeight));
+
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + (2 * game.tileWidth), y * game.tileHeight);
+					glEnd();
+				}
+				else {
+					glBegin(GL_POLYGON); 	// draw from bottom left, clockwise
+					glTexCoord2d(1.0, 1.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight);
+
+					glTexCoord2d(1.0, 0.0);
+					glVertex2f(x * game.tileWidth, y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 0.0);
+					glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight + game.tileHeight);
+
+					glTexCoord2d(0.0, 1.0);
+					glVertex2f(x * game.tileWidth + game.tileWidth, y * game.tileHeight);
+					glEnd();
+				}
+			glDisable(GL_TEXTURE_2D);
+			}
+		}
+	}
+}
+
 void initLevel1() {
 	// levelMap encodes each tile as a character in a string
 	// key: - : empty space
@@ -887,42 +1020,48 @@ void initLevel1() {
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
 	//		b : bush
+	//		B : foreground bush
 	//		q : flower
 	//		w : flower
 	//		e : flower
 	//		W : water
+	//		M : stopper for moving platforms
+	//		z : foreground grass 1
+	//		x : foreground grass 2
+	//		t : tree
+	//		T : foreground tree
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-1-1-1-1-1---w------------------------------------------------D";
-	game.levelMap += "D-----------####-----b-e---------------------------------------D";
-	game.levelMap += "D-------------------####--------------w-q-----------------b--q-D";
-	game.levelMap += "D-------------------------------e-----###----------------######D";
-	game.levelMap += "D-------------------------q-----###------------b-1-------------D";
+	game.levelMap += "D-1-1-1-1-1--zw------------------------------------------------D";
+	game.levelMap += "D-----------####-----bxe---------------------------------------D";
+	game.levelMap += "D-------------------####--------------w-q-----------------bx-qxD";
+	game.levelMap += "D-------------------------------ez----###----------------######D";
+	game.levelMap += "D-------------------------q-----###------------b-1xz-----------D";
 	game.levelMap += "D----------------w-------###------------------#######----------D";
 	game.levelMap += "D---------------####-------------------------------------------D";
-	game.levelMap += "D------q-b------------------------------e----------------------D";
+	game.levelMap += "D------qxb------------------------------e----------------------D";
 	game.levelMap += "D-----######---------------------------#####-------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-w-b---e----------------1b-------1-------------1b1-1----------D";
+	game.levelMap += "D-w-b-zxe----------------1b-------1-------------1b1z1----------D";
 	game.levelMap += "D#########-------------#####----#####----------#######---------D";
 	game.levelMap += "D--------------------------------------------------------------D";
-	game.levelMap += "D-----------------------------b----------------------------1-1-D";
+	game.levelMap += "D-----------------------------b----------------------------1-1xD";
 	game.levelMap += "D---------b-q----###-------#####--------------------------#####D";
 	game.levelMap += "D--------####--------------------------------------------------D";
-	game.levelMap += "D---------------------b--------------e-b-G--w-------1----------D";
+	game.levelMap += "D---------------------b--------------e-b-Gxzw-------1----------D";
 	game.levelMap += "D-----------------q-#####------------#########-----###------q1-D";
 	game.levelMap += "D-----------e----###DD--------------------------------------###D";
 	game.levelMap += "D----------###-------------------------------------------------D";
-	game.levelMap += "D-----1---------------------w--1-q-----------------------1w----D";
-	game.levelMap += "D---#####------------------########---------------------###----D";
-	game.levelMap += "D------------------------------------------------------#DDD----D";
-	game.levelMap += "Dq-w----b-e-------------------------------------w-1------------D";
-	game.levelMap += "D###########--b--w--q---------------------------#####----------D";
-	game.levelMap += "DDDDDDDDDDDD#########---------e----------b---------------------D";
-	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD-b------###WWWWWWW#####-e-----------d---b-D";
-	game.levelMap += "#############################DDDDDDDDDDDDDDD###################D";
+	game.levelMap += "D-----1xz----------------qx-------xzz--------------------1w----D";
+	game.levelMap += "D---#####---------------###-------###-------------------###----D";
+	game.levelMap += "D--------------------------------------xxz-------------#DDD----D";
+	game.levelMap += "Dq-w--x-bxe----------------------------###------w-t------------D";
+	game.levelMap += "D###########--bz-T-zq---------------------------#####----------D";
+	game.levelMap += "DDDDDDDDDDDD#########---------T----------bx--------------------D";
+	game.levelMap += "DDDDDDDDDDDDDDDDDDDDD-b---xx-###-------#####-exzxBxzxxz--d---b-D";
+	game.levelMap += "#############################DDDWWWWWWWDDDDD###################D";
 
 	// reverses level map string so it is rendered the right way round
 	reverse(game.levelMap.begin(), game.levelMap.end());
@@ -977,15 +1116,15 @@ void initLevel1() {
 
 	ghost1.posX = 0;
 	ghost1.posY = 200;
-	ghost2.posX = 0;
+	ghost2.posX = 300;
 	ghost2.posY = 670;
-	ghost3.posX = 0;
+	ghost3.posX = 700;
 	ghost3.posY = 800;
 	ghost4.posX = 2048;
 	ghost4.posY = 110;
-	ghost5.posX = 2048;
+	ghost5.posX = 1600;
 	ghost5.posY = 475;
-	ghost6.posX = 2048;
+	ghost6.posX = 1250;
 	ghost6.posY = 950;
 
 	// set player score to 0
@@ -1004,17 +1143,21 @@ void initLevel2() {
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
 	//		b : bush
+	//		B : foreground bush
 	//		q : flower
 	//		w : flower
 	//		e : flower
 	//		W : water
+	//		M : stopper for moving platforms
+	//		z : foreground grass 1
+	//		x : foreground grass 2
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D------------G-------------------------------------------------D";
 	game.levelMap += "D-----------###------e-----b----w----1-------------------------D";
-	game.levelMap += "D-------------------##----###---##--###------------------------D";
+	game.levelMap += "D----------------MMM##----###---##--###------------------------D";
 	game.levelMap += "D-------b-q---------------------------------q------------------D";
 	game.levelMap += "D------####--------------------------------###-----------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -1024,7 +1167,7 @@ void initLevel2() {
 	game.levelMap += "D----#####--------------------------------------------------###D";
 	game.levelMap += "D-------------1-------bw--------------------1------------b-----D";
 	game.levelMap += "D-----------#####---#####------------------###--------######---D";
-	game.levelMap += "D--------------------------------1-1q------------------DDDDD---D";
+	game.levelMap += "D----------------MMM-------------1-1q------------------DDDDD---D";
 	game.levelMap += "D-------------------------------#####--------------e-----------D";
 	game.levelMap += "D-----------b-1---------------------------------#####----------D";
 	game.levelMap += "D---------########--------b-q-----------1-1-1------------------D";
@@ -1034,11 +1177,11 @@ void initLevel2() {
 	game.levelMap += "D-----------d--------------------------------------------------D";
 	game.levelMap += "D----------####---------------------------------------11-------D";
 	game.levelMap += "D----------------------------------------------------####------D";
-	game.levelMap += "D----###----------b--------------------------------------------D";
+	game.levelMap += "D----###----------bz-------------------------------------------D";
 	game.levelMap += "D--b------------######----------b------------1w1b1-e-----------D";
-	game.levelMap += "D#####-q---------------------w-#####--------########-----------D";
+	game.levelMap += "D#####-q---------------------w-#####x-------########-----------D";
 	game.levelMap += "DDDDDD######--------------#####DDDDD#####----------------------D";
-	game.levelMap += "DDDDDDDDDDDDWWWWWWWWWWWWWWDDDDDDDDDDDDDDD-b---------------b----D";
+	game.levelMap += "DDDDDDDDDDDDWWWWWWWWWWWWWWDDDDDDDDDDDDDDD-b---x-------z---b----D";
 	game.levelMap += "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD######################D";
 
 	// reverses level map string so it is rendered the right way round
@@ -1058,7 +1201,7 @@ void initLevel2() {
 	enemy5.posX = 1300.0f;
 	enemy5.posY = 256.0f;
 	enemy6.posX = 1000.0f;
-	enemy6.posY = 512.0f;
+	enemy6.posY = 544.0f;
 	enemy7.posX = 600.0f;
 	enemy7.posY = 3000.0f;
 	enemy8.posX = 600.0f;
@@ -1066,8 +1209,8 @@ void initLevel2() {
 
 	platform1.posX = 800.0f;
 	platform1.posY = 512.0f;
-	platform2.posX = 900.0f;
-	platform2.posY = 3000.0f;
+	platform2.posX = 3000.0f;
+	platform2.posY = 640.0f;
 	platform3.posX = 1100.0f;
 	platform3.posY = 3000.0f;
 	platform4.posX = 1528.0f;
@@ -1094,15 +1237,15 @@ void initLevel2() {
 
 	ghost1.posX = 0;
 	ghost1.posY = 200;
-	ghost2.posX = 0;
+	ghost2.posX = 300;
 	ghost2.posY = 670;
-	ghost3.posX = 0;
+	ghost3.posX = 700;
 	ghost3.posY = 800;
 	ghost4.posX = 2048;
 	ghost4.posY = 110;
-	ghost5.posX = 2048;
+	ghost5.posX = 1600;
 	ghost5.posY = 475;
-	ghost6.posX = 2048;
+	ghost6.posX = 1250;
 	ghost6.posY = 950;
 
 	// set player score to 0
@@ -1121,10 +1264,14 @@ void initLevel3() {
 	//		G : gem (value 10) - level objective
 	//		d : door - exits level when gem collected
 	//		b : bush
+	//		B : foreground bush
 	//		q : flower
 	//		w : flower
 	//		e : flower
 	//		W : water
+	//		M : stopper for moving platforms
+	//		z : foreground grass 1
+	//		x : foreground grass 2
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
 	game.levelMap += "D--------------------------------------------------------------D";
@@ -1211,15 +1358,15 @@ void initLevel3() {
 
 	ghost1.posX = 0;
 	ghost1.posY = 200;
-	ghost2.posX = 0;
+	ghost2.posX = 300;
 	ghost2.posY = 670;
-	ghost3.posX = 0;
+	ghost3.posX = 700;
 	ghost3.posY = 800;
 	ghost4.posX = 2048;
 	ghost4.posY = 110;
-	ghost5.posX = 2048;
+	ghost5.posX = 1600;
 	ghost5.posY = 475;
-	ghost6.posX = 2048;
+	ghost6.posX = 1250;
 	ghost6.posY = 950;
 
 	// set player score to 0
@@ -1891,6 +2038,8 @@ void doGameLevel() {
 			game.projectiles.erase(game.projectiles.begin()+i);
 		}
 	}
+
+	drawLevelForeground();
 }
 
 // main display function

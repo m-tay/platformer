@@ -6,6 +6,16 @@ MovingPlatform::MovingPlatform(Game& gameObj, float x, float y) {
 	posY = y;
 	game = &gameObj;
 	platformWidth = tilesWide * game->tileWidth; // how many tiles wide the platform is
+}
+
+MovingPlatform::MovingPlatform(Game& gameObj, float x, float y, bool isLift) {
+	posX = x;
+	posY = y;
+	game = &gameObj;
+	platformWidth = tilesWide * game->tileWidth; // how many tiles wide the platform is
+	lift = isLift;	// set platform to be a lift
+	movingPosX = false;
+	movingPosY = true;
 };
 
 // calculates the tiles around the entity
@@ -40,7 +50,8 @@ bool MovingPlatform::isCollidingX() {
 
 	// if any collisions detected...
 	if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
-		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D') {
+		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D' ||
+		tileTL == 'M' || tileTR == 'M' || tileBL == 'M' || tileBR == 'M') {
 
 		// invert direction of movement flag
 		if (movingPosX)
@@ -60,7 +71,7 @@ bool MovingPlatform::isCollidingY() {
 	// calculate x,y coords of surrounding tiles
 	// assumes entities are no bigger than 1 standard tile width
 	int tileLeft = (int)posX / game->tileWidth;
-	int tileRight = (int)(posX / game->tileWidth) + 1;
+	int tileRight = (int)(posX / game->tileWidth) + tilesWide;
 	int tileTop = (int)(newPosY / game->tileHeight) + 1;
 	int tileBottom = (int)newPosY / game->tileHeight;
 
@@ -70,16 +81,17 @@ bool MovingPlatform::isCollidingY() {
 	char tileBL = game->getTile(game, tileLeft, tileBottom);
 	char tileBR = game->getTile(game, tileRight, tileBottom);
 
-	// ceiling collision, set y velocity to 0
-	if (tileTL == '#' || tileTR == '#' ||
-		tileTL == 'D' || tileTR == 'D') {
-		velY = 0;
-		return true;
-	}
+	// if any collisions detected...
+	if (tileTL == '#' || tileTR == '#' || tileBL == '#' || tileBR == '#' ||
+		tileTL == 'D' || tileTR == 'D' || tileBL == 'D' || tileBR == 'D' ||
+		tileTL == 'M' || tileTR == 'M' || tileBL == 'M' || tileBR == 'M') {
 
-	// ground collision, set jumping flag back to false
-	if (tileBL == '#' || tileBR == '#' ||
-		tileBL == 'D' || tileBR == 'D') {
+		// invert direction of movement flag
+		if (movingPosY)
+			movingPosY = false;
+		else
+			movingPosY = true;
+
 		return true;
 	}
 
@@ -90,10 +102,19 @@ bool MovingPlatform::isCollidingY() {
 // update entity position based on velocity
 void MovingPlatform::updatePosition() {
 	// add velocity to platform
-	if (movingPosX)
-		velX = 0.2f;
-	else
-		velX = -0.2f;
+	if (!lift) {
+		if (movingPosX)
+			velX = 0.2f;
+		else
+			velX = -0.2f;
+	}
+
+	if (lift) {
+		if (movingPosY)
+			velY = 0.2f;
+		else
+			velY = -0.2f;
+	}
 
 	// update entity's model of the tiles surrounding it
 	findSurroundingTiles();
@@ -258,6 +279,25 @@ void Entity::checkSpecialTiles() {
 	}
 }
 
+// checks if player is on ground and updates status (needed if player walks off edge)
+bool Entity::isOnGround() {
+	// calculate x,y coords of surrounding tiles
+	// assumes entities are no bigger than 1 standard tile width
+	tileLeft = (int)newPosX / game->tileWidth;
+	tileRight = (int)(newPosX / game->tileWidth) + 1;
+	tileBottom = (int)posY / game->tileHeight;
+
+	// get the actual tile values from tilemap
+	char tileBL = game->getTile(game, tileLeft, tileBottom);
+	char tileBR = game->getTile(game, tileRight, tileBottom);
+
+	if (tileBL != '#' && tileBR != '#')
+		return false;
+
+	return true;
+}
+
+
 // check for collisions with tilemap on x axis
 bool Entity::isCollidingX() {
 	// calculate x,y coords of surrounding tiles
@@ -350,7 +390,6 @@ void Entity::trackMovingPlatforms() {
 				posX += game->movingPlatforms.at(i)->velX * game->deltaTime;
 				velY = 0;
 				onGround = true;
-
 			}
 		}
 		// if out of bounds of moving platform and was on ground
@@ -434,6 +473,12 @@ bool Entity::isCollidingWithEnemies() {
 // update entity position based on velocity
 void Entity::updatePosition() {
 
+	// check for on-ground-ness
+	if (isOnGround())
+		onGround = true;
+	else
+		onGround = false;
+
 	// calculate proposed new position
 	newPosX = posX + (velX * game->deltaTime);
 	newPosY = posY + (velY * game->deltaTime);
@@ -485,13 +530,19 @@ void Entity::updatePosition() {
 		posY = newPosY;
 
 		// check if player death animation should trigger game over screen
-		if (posY < -3000)
+		if (posY < -1000)
 			game->gameStage = "gameover";
 	}
 
 	// apply gravity 
-	if (!onGround)
+	if (!onGround) {
 		velY -= (game->gravityRate * game->deltaTime);
+
+		// set terminal velocity (cap falling speed)
+		if (velY < -0.7f)
+			velY = -0.7f;
+
+	}
 }
 
 // draws the entity

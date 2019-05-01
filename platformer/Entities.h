@@ -20,9 +20,14 @@ public:
 	int tilesWide = 3;
 	int platformWidth;
 	bool movingPosX = true;
+	bool movingPosY = true;
+	bool lift = false;		// tracks whether moving platform is a lift or not
 
 	// constructor
 	MovingPlatform(Game& gameObj, float x, float y);
+
+	// constructor with option to make it a lift
+	MovingPlatform(Game& gameObj, float x, float y, bool isLift);
 
 	// calculates the tiles around the entity
 	void findSurroundingTiles();
@@ -92,6 +97,10 @@ public:
 
 	// check for collisions with enemies
 	bool isCollidingWithEnemies();
+
+	// check if player is on ground - incase player walks off edge instead
+	// of jumping
+	bool isOnGround();
 
 	// update entity position based on velocity
 	void updatePosition();

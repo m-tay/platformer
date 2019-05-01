@@ -21,7 +21,7 @@ struct Point {
 class Game {
 public:
 	// DEBUG FLAG - set to true to view collision detection drawing 
-	bool debug = true; 
+	bool debug = false; 
 
 	// global parameters
 	int screenWidth = 900, screenHeight = 700;
