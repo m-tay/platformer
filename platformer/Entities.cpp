@@ -437,31 +437,35 @@ bool Entity::isCollidingWithEnemies() {
 		}
 	}
 
-	// for each ghost
-	for (int i = 0; i < game->ghosts.size(); i++) {
+	// check if ghosts are active (when gem is collected)
+	if (game->gemCollected)
+	{
+		// for each ghost
+		for (int i = 0; i < game->ghosts.size(); i++) {
 
-		// offset x,y pos by half tile widths to calc bounding circle
-		float enemyX = game->ghosts.at(i)->posX + game->halfTileW;
-		float enemyY = game->ghosts.at(i)->posY + game->halfTileH;
+			// offset x,y pos by half tile widths to calc bounding circle
+			float enemyX = game->ghosts.at(i)->posX + game->halfTileW;
+			float enemyY = game->ghosts.at(i)->posY + game->halfTileH;
 
-		// debug mode - draw collision detection distance
-		if (game->debug) {
-			glBegin(GL_LINES);
-			glVertex2f(entityX, entityY);
-			glVertex2f(enemyX, enemyY);
-			glEnd();
-		}
+			// debug mode - draw collision detection distance
+			if (game->debug) {
+				glBegin(GL_LINES);
+				glVertex2f(entityX, entityY);
+				glVertex2f(enemyX, enemyY);
+				glEnd();
+			}
 
-		// calculate distance between circles
-		float distX = entityX - enemyX;
-		float distY = entityY - enemyY;
-		float dist = sqrt((distX * distX) + (distY * distY));
+			// calculate distance between circles
+			float distX = entityX - enemyX;
+			float distY = entityY - enemyY;
+			float dist = sqrt((distX * distX) + (distY * distY));
 
-		// collision detection - check if distance between circles is less than sum of radius (tile width)
-		if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
-			velY = 1.5f;				// add a big jump before falling off screen dead
-			onGround = false;			// set onGround flag so gravity applies
-			return true;				// collision detected
+			// collision detection - check if distance between circles is less than sum of radius (tile width)
+			if (dist <= game->tileWidth) {	// technically it is halfTileW + halfTileW but this just takes a calc out
+				velY = 1.5f;				// add a big jump before falling off screen dead
+				onGround = false;			// set onGround flag so gravity applies
+				return true;				// collision detected
+			}
 		}
 	}
 
